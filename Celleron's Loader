@@ -1,9 +1,8 @@
--- Create ScreenGui
+-- ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.ResetOnSpawn = false -- Ensure the GUI does not disappear on death
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Create a Frame to hold buttons
+-- Frame
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 250, 0, 250) -- Set size to 250x250 pixels
 frame.Position = UDim2.new(0.25, 0, 0.25, 0)
@@ -11,28 +10,16 @@ frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background
 frame.BorderSizePixel = 0 -- Remove border
 frame.Parent = screenGui
 
--- Add a UIStroke to the frame for a border effect
+-- UiStroke
 local uiStroke = Instance.new("UIStroke")
 uiStroke.Color = Color3.fromRGB(255, 255, 255) -- White border
 uiStroke.Thickness = 2 -- Border thickness
 uiStroke.Parent = frame
 
--- Add a UICorner to round the corners of the frame
+-- UI-Corner
 local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0.1, 0) -- Rounded corners
 uiCorner.Parent = frame
-
--- Create a Title
-local title = Instance.new("TextLabel")
-title.Name = "Title"
-title.Text = "Celleron Loader"
-title.Size = UDim2.new(1, 0, 0.1, 0)
-title.Position = UDim2.new(0, 0, 0, 0)
-title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.SourceSansBold
-title.TextSize = 24
-title.Parent = frame
 
 -- Function to create a button
 local function createButton(name, text, position, action)
@@ -46,7 +33,7 @@ local function createButton(name, text, position, action)
     button.Font = Enum.Font.SourceSansBold -- Bold font
     button.TextSize = 20 -- Text size
     
-    -- Add a UICorner to round the corners of the button
+    -- Button Ui-Corner
     local buttonUICorner = Instance.new("UICorner")
     buttonUICorner.CornerRadius = UDim.new(0.1, 0) -- Rounded corners
     buttonUICorner.Parent = button
@@ -55,7 +42,7 @@ local function createButton(name, text, position, action)
     button.MouseButton1Click:Connect(action)
 end
 
--- Make the frame draggable
+-- frame draggable
 local dragToggle = nil
 local dragStart = nil
 local startPos = nil
@@ -90,7 +77,7 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
--- Example buttons
+-- buttons
 createButton("Button1", "Papers Pls", UDim2.new(0.1, 0, 0.2, 0), function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Papers%20Pls",true))()
 end)
