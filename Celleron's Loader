@@ -98,3 +98,7 @@ end)
 createButton("Button2", "Stateview Prison", UDim2.new(0.1, 0, 0.4, 0), function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Stateview%20Prison",true))()
 end)
+
+createButton("Button2", "Stateview Prison", UDim2.new(0.1, 0, 0.6, 0), function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Flee%20The%20Facility",true))()
+end)
