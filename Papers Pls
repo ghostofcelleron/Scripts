@@ -26,7 +26,7 @@ local function createButton(name, text, position, action)
     local button = Instance.new("TextButton")
     button.Name = name
     button.Text = text
-    button.Size = UDim2.new(0.5, 0, 0.1, 0)
+    button.Size = UDim2.new(0.8, -1, 0.075, 1)
     button.Position = position
     button.BackgroundColor3 = Color3.fromRGB(100, 100, 100) -- Button color
     button.TextColor3 = Color3.fromRGB(255, 255, 255) -- Text color
@@ -78,7 +78,7 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
 end)
 
 -- Example buttons
-createButton("Button1", "Airbase", UDim2.new(0.1, 0, 0.1, 0), function()
+createButton("Button1", "Airbase", UDim2.new(0.1, 0, 0.05, 0), function()
     local targetPosition = Vector3.new(233.48690795898438, 3.4412808418273926, 617.1038208007812)
 
     -- Teleport the player's character to the target position
@@ -93,7 +93,7 @@ createButton("Button1", "Airbase", UDim2.new(0.1, 0, 0.1, 0), function()
     teleportPlayer()
 end)
 
-createButton("Button2", "Guard Armory", UDim2.new(0.1, 0, 0.2, 0), function()
+createButton("Button2", "Guard Armory", UDim2.new(0.1, 0, 0.15, 0), function()
     local targetPosition = Vector3.new(79.27246856689453, 2.999999761581421, -69.04203033447266)
 
     -- Teleport the player's character to the target position
@@ -108,7 +108,7 @@ createButton("Button2", "Guard Armory", UDim2.new(0.1, 0, 0.2, 0), function()
     teleportPlayer()
 end)
 
-createButton("Button3", "Guard Spawn", UDim2.new(0.1, 0, 0.3, 0), function()
+createButton("Button3", "Guard Spawn", UDim2.new(0.1, 0, 0.25, 0), function()
     local targetPosition = Vector3.new(63.02465057373047, 2.999999761581421, -61.568904876708984)
 
     -- Teleport the player's character to the target position
@@ -123,7 +123,7 @@ createButton("Button3", "Guard Spawn", UDim2.new(0.1, 0, 0.3, 0), function()
     teleportPlayer()
 end)
 
-createButton("Button4", "Vehicle Spawn", UDim2.new(0.1, 0, 0.4, 0), function()
+createButton("Button4", "Vehicle Spawn", UDim2.new(0.1, 0, 0.35, 0), function()
     local targetPosition = Vector3.new(1480.160400390625, 3.999999761581421, 74.6236343383789)
 
     -- Teleport the player's character to the target position
@@ -138,7 +138,7 @@ createButton("Button4", "Vehicle Spawn", UDim2.new(0.1, 0, 0.4, 0), function()
     teleportPlayer()
 end)
 
-createButton("Button5", "Clothing Store", UDim2.new(0.1, 0, 0.5, 0), function()
+createButton("Button5", "Clothing Store", UDim2.new(0.1, 0, 0.45, 0), function()
     local targetPosition = Vector3.new(1767.302734375, 4.100001335144043, 119.07331085205078)
 
     -- Teleport the player's character to the target position
@@ -153,7 +153,7 @@ createButton("Button5", "Clothing Store", UDim2.new(0.1, 0, 0.5, 0), function()
     teleportPlayer()
 end)
 
-createButton("Button6", "Theatre", UDim2.new(0.1, 0, 0.6, 0), function()
+createButton("Button6", "Theatre", UDim2.new(0.1, 0, 0.55, 0), function()
     local targetPosition = Vector3.new(1944.4127197265625, 3.999999761581421, 70.38367462158203)
 
     -- Teleport the player's character to the target position
@@ -168,7 +168,7 @@ createButton("Button6", "Theatre", UDim2.new(0.1, 0, 0.6, 0), function()
     teleportPlayer()
 end)
 
-createButton("Button7", "Safe House", UDim2.new(0.1, 0, 0.7, 0), function()
+createButton("Button7", "Safe House", UDim2.new(0.1, 0, 0.65, 0), function()
     local targetPosition = Vector3.new(2487.84326171875, 3.5003795623779297, 19.08624839782715)
 
     -- Teleport the player's character to the target position
@@ -183,7 +183,7 @@ createButton("Button7", "Safe House", UDim2.new(0.1, 0, 0.7, 0), function()
     teleportPlayer()
 end)
 
-createButton("Button8", "Vehicle Shop (Job 1)", UDim2.new(0.1, 0, 0.8, 0), function()
+createButton("Button8", "Vehicle Shop (Job 1)", UDim2.new(0.1, 0, 0.75, 0), function()
 local targetPosition = Vector3.new(1810.1351318359375, 3.499999761581421, 80.68644714355469)
 
 -- Function to teleport the player's character to the target position
@@ -198,7 +198,7 @@ end
 teleportPlayer()
 end)
 
-createButton("Button8", "Book Writing (Job 2)", UDim2.new(0.1, 0, 0.9, 0), function()
+createButton("Button8", "Book Writing (Job 2)", UDim2.new(0.1, 0, 0.85, 0), function()
 local targetPosition = Vector3.new(1727.126220703125, 3.999999761581421, 240.60963439941406)
 
 -- Function to teleport the player's character to the target position
@@ -214,6 +214,6 @@ teleportPlayer()
 
 end)
 
-createButton("Button9", "Infinite Yield", UDim2.new(0.1, 0, 1, 0), function()
+createButton("Button9", "Infinite Yield", UDim2.new(0.1, 0, 95, 0), function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
 end)
