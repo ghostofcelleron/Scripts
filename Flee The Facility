@@ -1,0 +1,104 @@
+-- ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 250, 0, 250) -- Set size to 250x250 pixels
+frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background
+frame.BorderSizePixel = 0 -- Remove border
+frame.Parent = screenGui
+
+-- UiStroke
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Color3.fromRGB(255, 255, 255) -- White border
+uiStroke.Thickness = 2 -- Border thickness
+uiStroke.Parent = frame
+
+-- UI-Corner
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0.1, 0) -- Rounded corners
+uiCorner.Parent = frame
+
+-- Function to create a button
+local function createButton(name, text, position, action)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Text = text
+    button.Size = UDim2.new(0.8, 0, 0.1, 0)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100) -- Button color
+    button.TextColor3 = Color3.fromRGB(255, 255, 255) -- Text color
+    button.Font = Enum.Font.SourceSansBold -- Bold font
+    button.TextSize = 20 -- Text size
+    
+    -- Button Ui-Corner
+    local buttonUICorner = Instance.new("UICorner")
+    buttonUICorner.CornerRadius = UDim.new(0.1, 0) -- Rounded corners
+    buttonUICorner.Parent = button
+    
+    button.Parent = frame
+    button.MouseButton1Click:Connect(action)
+end
+
+-- frame draggable
+local dragToggle = nil
+local dragStart = nil
+local startPos = nil
+
+local function updateInput(input)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragToggle = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragToggle = false
+            end
+        end)
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        input = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragToggle then
+        updateInput(input)
+    end
+end)
+
+-- buttons
+createButton("Button1", "Spawn", UDim2.new(0.1, 0, 0.1, 0), function()
+game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(111.20410919189453, 8.207777976989746, -413.4593811035156))
+end)
+createButton("Button2", "Map Vote", UDim2.new(0.1, 0, 0.2, 0), function()
+game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(147.83396911621094, 5.999999523162842, -349.55047607421875))
+end)
+createButton("Button3", "Cave", UDim2.new(0.1, 0, 0.2, 0), function()
+game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(279.4504089355469, -11.000000953674316, -366.7091369628906))
+end)
+createButton("Button3", "Trading Servers [Req. Level 6]", UDim2.new(0.1, 0, 0.2, 0), function()
+game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(64.84588623046875, 3.999999761581421, -306.64068603515625))
+end)
+createButton("Button5", "Random Computer", UDim2.new(0.1, 0, 0.2, 0), function()
+loadstring(game:HttpGet("https://pastebin.com/raw/tdUC169t",true))()
+end)
+createButton("Button6", "Random Exit", UDim2.new(0.1, 0, 0.2, 0), function()
+loadstring(game:HttpGet("https://pastebin.com/raw/AsJaDdwq",true))()
+end)
+createButton("Button7", "FE Audio Control", UDim2.new(0.1, 0, 0.2, 0), function()
+loadstring(game:HttpGet("https://pastebin.com/raw/w3uzjgEq",true))()
+end)
+createButton("Button8", "Infinite Yield", UDim2.new(0.1, 0, 0.2, 0), function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
