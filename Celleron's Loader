@@ -10,18 +10,46 @@ frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background
 frame.BorderSizePixel = 0 -- Remove border
 frame.Parent = screenGui
 
--- UiStroke
+-- Title
+local title = Instance.new("TextLabel")
+title.Text = "<b><i>Celeron Script Loader</i></b>"
+title.Size = UDim2.new(0.8, 0, 0.1, 0) -- Set x-axis size to 80% of the frame width
+title.Position = UDim2.new(0.1, 0, 0, 0) -- Center the title horizontally
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Match frame background
+title.TextColor3 = Color3.fromRGB(0, 0, 139) -- Dark blue text color
+title.Font = Enum.Font.SourceSansBold
+title.RichText = true
+title.TextSize = 24
+title.BorderSizePixel = 0 -- Remove the border
+title.Parent = frame
+
+-- UiStroke with alternating RGB colors
 local uiStroke = Instance.new("UIStroke")
-uiStroke.Color = Color3.fromRGB(255, 255, 255) -- White border
 uiStroke.Thickness = 2 -- Border thickness
 uiStroke.Parent = frame
+
+local colors = {Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255)}
+local currentColorIndex = 1
+
+local function updateBorderColor()
+    uiStroke.Color = colors[currentColorIndex]
+    currentColorIndex = (currentColorIndex % #colors) + 1
+end
+
+-- Update the border color every second
+spawn(function()
+    while true do
+        updateBorderColor()
+        wait(1) -- Change color every second
+    end
+end)
 
 -- UI-Corner
 local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0.1, 0) -- Rounded corners
 uiCorner.Parent = frame
 
--- Function to create a button
+-- buttonFunction
 local function createButton(name, text, position, action)
     local button = Instance.new("TextButton")
     button.Name = name
@@ -42,7 +70,7 @@ local function createButton(name, text, position, action)
     button.MouseButton1Click:Connect(action)
 end
 
--- frame draggable
+-- Frame draggable
 local dragToggle = nil
 local dragStart = nil
 local startPos = nil
@@ -77,7 +105,7 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
--- buttons
+-- Buttons
 createButton("Button1", "Papers Pls", UDim2.new(0.1, 0, 0.2, 0), function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Papers%20Pls",true))()
 end)
@@ -86,6 +114,6 @@ createButton("Button2", "Stateview Prison", UDim2.new(0.1, 0, 0.4, 0), function(
     loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Stateview%20Prison",true))()
 end)
 
-createButton("Button2", "Stateview Prison", UDim2.new(0.1, 0, 0.6, 0), function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Flee%20The%20Facility",true))()
+createButton("Button3", "Flee The Facility", UDim2.new(0.1, 0, 0.6, 0), function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Flee%20The%20Facility",true))()
 end)
