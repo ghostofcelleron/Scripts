@@ -214,6 +214,6 @@ teleportPlayer()
 
 end)
 
-createButton("Button9", "Infinite Yield", UDim2.new(0.1, 0, 95, 0), function()
+createButton("Button9", "Infinite Yield", UDim2.new(0.1, 0, 0.95, 0), function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
 end)
