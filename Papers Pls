@@ -1,8 +1,8 @@
--- Create ScreenGui
+-- ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Create a Frame to hold buttons
+-- Frame
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 250, 0, 250) -- Set size to 250x250 pixels
 frame.Position = UDim2.new(0.25, 0, 0.25, 0)
@@ -10,13 +10,13 @@ frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background
 frame.BorderSizePixel = 0 -- Remove border
 frame.Parent = screenGui
 
--- Add a UIStroke to the frame for a border effect
+-- UiStroke
 local uiStroke = Instance.new("UIStroke")
 uiStroke.Color = Color3.fromRGB(255, 255, 255) -- White border
 uiStroke.Thickness = 2 -- Border thickness
 uiStroke.Parent = frame
 
--- Add a UICorner to round the corners of the frame
+-- UI-Corner
 local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0.1, 0) -- Rounded corners
 uiCorner.Parent = frame
@@ -26,14 +26,14 @@ local function createButton(name, text, position, action)
     local button = Instance.new("TextButton")
     button.Name = name
     button.Text = text
-    button.Size = UDim2.new(0.8, -1, 0.075, 1)
+    button.Size = UDim2.new(0.8, 0, 0.1, 0)
     button.Position = position
     button.BackgroundColor3 = Color3.fromRGB(100, 100, 100) -- Button color
     button.TextColor3 = Color3.fromRGB(255, 255, 255) -- Text color
     button.Font = Enum.Font.SourceSansBold -- Bold font
     button.TextSize = 20 -- Text size
     
-    -- Add a UICorner to round the corners of the button
+    -- Button Ui-Corner
     local buttonUICorner = Instance.new("UICorner")
     buttonUICorner.CornerRadius = UDim.new(0.1, 0) -- Rounded corners
     buttonUICorner.Parent = button
@@ -42,7 +42,7 @@ local function createButton(name, text, position, action)
     button.MouseButton1Click:Connect(action)
 end
 
--- Make the frame draggable
+-- frame draggable
 local dragToggle = nil
 local dragStart = nil
 local startPos = nil
@@ -77,7 +77,7 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
--- Example buttons
+-- buttons
 createButton("Button1", "Airbase", UDim2.new(0.1, 0, 0.05, 0), function()
     local targetPosition = Vector3.new(233.48690795898438, 3.4412808418273926, 617.1038208007812)
 
