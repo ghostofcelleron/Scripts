@@ -5,28 +5,56 @@ screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 -- Frame
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 250, 0, 250) -- Set size to 250x250 pixels
-frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+frame.Position = UDim2.new(0.25, 0, 0.35, 0) -- Adjusted position to move frame down
 frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background
 frame.BorderSizePixel = 0 -- Remove border
 frame.Parent = screenGui
 
--- UiStroke
+-- Title
+local title = Instance.new("TextLabel")
+title.Text = "<b><i>Papers Pls</i></b>"
+title.Size = UDim2.new(0.8, 0, 0.1, 0) -- Set x-axis size to 80% of the frame width
+title.Position = UDim2.new(0.1, 0, 0, 0) -- Move title back to the original position
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Match frame background
+title.TextColor3 = Color3.fromRGB(0, 0, 139) -- Dark blue text color
+title.Font = Enum.Font.SourceSansBold
+title.RichText = true
+title.TextSize = 24
+title.BorderSizePixel = 0 -- Remove the border
+title.Parent = frame
+
+-- UiStroke with alternating RGB colors
 local uiStroke = Instance.new("UIStroke")
-uiStroke.Color = Color3.fromRGB(255, 255, 255) -- White border
 uiStroke.Thickness = 2 -- Border thickness
 uiStroke.Parent = frame
+
+local colors = {Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255)}
+local currentColorIndex = 1
+
+local function updateBorderColor()
+    uiStroke.Color = colors[currentColorIndex]
+    currentColorIndex = (currentColorIndex % #colors) + 1
+end
+
+-- Update the border color every second
+spawn(function()
+    while true do
+        updateBorderColor()
+        wait(1) -- Change color every second
+    end
+end)
 
 -- UI-Corner
 local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0.1, 0) -- Rounded corners
 uiCorner.Parent = frame
 
--- Function to create a button
+-- Function to create buttons with updated size
 local function createButton(name, text, position, action)
     local button = Instance.new("TextButton")
     button.Name = name
     button.Text = text
-    button.Size = UDim2.new(0.8, 0, 0.1, 0)
+    button.Size = UDim2.new(0.8, 0, 0.05, 0)  -- Updated button size (wider on x-axis)
     button.Position = position
     button.BackgroundColor3 = Color3.fromRGB(100, 100, 100) -- Button color
     button.TextColor3 = Color3.fromRGB(255, 255, 255) -- Text color
@@ -42,7 +70,7 @@ local function createButton(name, text, position, action)
     button.MouseButton1Click:Connect(action)
 end
 
--- frame draggable
+-- Frame draggable
 local dragToggle = nil
 local dragStart = nil
 local startPos = nil
@@ -77,143 +105,43 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
--- buttons
-createButton("Button1", "Airbase", UDim2.new(0.1, 0, 0.05, 0), function()
-    local targetPosition = Vector3.new(233.48690795898438, 3.4412808418273926, 617.1038208007812)
-
-    -- Teleport the player's character to the target position
-    local function teleportPlayer()
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        
-        character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(targetPosition)
-    end
-
-    -- Teleport player on command
-    teleportPlayer()
+-- Buttons
+createButton("Button1", "Airbase", UDim2.new(0.1, 0, 0.15, 0), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(233.48690795898438, 3.4412808418273926, 617.1038208007812)
 end)
 
-createButton("Button2", "Guard Armory", UDim2.new(0.1, 0, 0.15, 0), function()
-    local targetPosition = Vector3.new(79.27246856689453, 2.999999761581421, -69.04203033447266)
-
-    -- Teleport the player's character to the target position
-    local function teleportPlayer()
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        
-        character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(targetPosition)
-    end
-
-    -- Teleport player on command
-    teleportPlayer()
+createButton("Button2", "Guard Armory", UDim2.new(0.1, 0, 0.21, 0), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(79.27246856689453, 2.999999761581421, -69.04203033447266)
 end)
 
-createButton("Button3", "Guard Spawn", UDim2.new(0.1, 0, 0.25, 0), function()
-    local targetPosition = Vector3.new(63.02465057373047, 2.999999761581421, -61.568904876708984)
-
-    -- Teleport the player's character to the target position
-    local function teleportPlayer()
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        
-        character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(targetPosition)
-    end
-
-    -- Teleport player on command
-    teleportPlayer()
+createButton("Button3", "Guard Spawn", UDim2.new(0.1, 0, 0.27, 0), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(63.02465057373047, 2.999999761581421, -61.568904876708984)
 end)
 
-createButton("Button4", "Vehicle Spawn", UDim2.new(0.1, 0, 0.35, 0), function()
-    local targetPosition = Vector3.new(1480.160400390625, 3.999999761581421, 74.6236343383789)
-
-    -- Teleport the player's character to the target position
-    local function teleportPlayer()
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        
-        character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(targetPosition)
-    end
-
-    -- Teleport player on command
-    teleportPlayer()
+createButton("Button4", "Vehicle Spawn", UDim2.new(0.1, 0, 0.33, 0), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1480.160400390625, 3.999999761581421, 74.6236343383789)
 end)
 
-createButton("Button5", "Clothing Store", UDim2.new(0.1, 0, 0.45, 0), function()
-    local targetPosition = Vector3.new(1767.302734375, 4.100001335144043, 119.07331085205078)
-
-    -- Teleport the player's character to the target position
-    local function teleportPlayer()
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        
-        character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(targetPosition)
-    end
-
-    -- Teleport player on command
-    teleportPlayer()
+createButton("Button5", "Clothing Store", UDim2.new(0.1, 0, 0.39, 0), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1767.302734375, 4.100001335144043, 119.07331085205078)
 end)
 
-createButton("Button6", "Theatre", UDim2.new(0.1, 0, 0.55, 0), function()
-    local targetPosition = Vector3.new(1944.4127197265625, 3.999999761581421, 70.38367462158203)
-
-    -- Teleport the player's character to the target position
-    local function teleportPlayer()
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        
-        character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(targetPosition)
-    end
-
-    -- Teleport player on command
-    teleportPlayer()
+createButton("Button6", "Theatre", UDim2.new(0.1, 0, 0.45, 0), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1944.4127197265625, 3.999999761581421, 70.38367462158203)
 end)
 
-createButton("Button7", "Safe House", UDim2.new(0.1, 0, 0.65, 0), function()
-    local targetPosition = Vector3.new(2487.84326171875, 3.5003795623779297, 19.08624839782715)
-
-    -- Teleport the player's character to the target position
-    local function teleportPlayer()
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        
-        character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(targetPosition)
-    end
-
-    -- Teleport player on command
-    teleportPlayer()
+createButton("Button7", "Safe House", UDim2.new(0.1, 0, 0.51, 0), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2487.84326171875, 3.5003795623779297, 19.08624839782715)
 end)
 
-createButton("Button8", "Vehicle Shop (Job 1)", UDim2.new(0.1, 0, 0.75, 0), function()
-local targetPosition = Vector3.new(1810.1351318359375, 3.499999761581421, 80.68644714355469)
-
--- Function to teleport the player's character to the target position
-local function teleportPlayer()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    
-    character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(targetPosition)
-end
-
--- Teleport player on command
-teleportPlayer()
+createButton("Button8", "Vehicle Shop (Job 1)", UDim2.new(0.1, 0, 0.57, 0), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1810.1351318359375, 3.499999761581421, 80.68644714355469)
 end)
 
-createButton("Button8", "Book Writing (Job 2)", UDim2.new(0.1, 0, 0.85, 0), function()
-local targetPosition = Vector3.new(1727.126220703125, 3.999999761581421, 240.60963439941406)
-
--- Function to teleport the player's character to the target position
-local function teleportPlayer()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    
-    character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(targetPosition)
-end
-
--- Teleport player on command
-teleportPlayer()
-
+createButton("Button9", "Book Writing (Job 2)", UDim2.new(0.1, 0, 0.63, 0), function()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1727.126220703125, 3.999999761581421, 240.60963439941406)
 end)
 
-createButton("Button9", "Infinite Yield", UDim2.new(0.1, 0, 0.95, 0), function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+createButton("Button10", "Infinite Yield", UDim2.new(0.1, 0, 0.69, 0), function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
 end)
