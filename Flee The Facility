@@ -10,11 +10,39 @@ frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background
 frame.BorderSizePixel = 0 -- Remove border
 frame.Parent = screenGui
 
+-- Title
+local title = Instance.new("TextLabel")
+title.Text = "<b>Flee The Facility</b>"
+title.Size = UDim2.new(0.8, 0, 0.1, 0) -- Set x-axis size to 80% of the frame width
+title.Position = UDim2.new(0.1, 0, 0, 0) -- Center the title horizontally
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Match frame background
+title.TextColor3 = Color3.fromRGB(139, 0, 0) -- Dark red text color
+title.Font = Enum.Font.SourceSansBold
+title.RichText = true
+title.TextSize = 24
+title.BorderSizePixel = 0 -- Remove the border
+title.Parent = frame
+
 -- UiStroke
 local uiStroke = Instance.new("UIStroke")
-uiStroke.Color = Color3.fromRGB(255, 255, 255) -- White border
 uiStroke.Thickness = 2 -- Border thickness
 uiStroke.Parent = frame
+
+local colors = {Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255)}
+local currentColorIndex = 1
+
+local function updateBorderColor()
+    uiStroke.Color = colors[currentColorIndex]
+    currentColorIndex = (currentColorIndex % #colors) + 1
+end
+
+-- Update the border color every second
+spawn(function()
+    while true do
+        updateBorderColor()
+        wait(0.25) -- Change color every second
+    end
+end)
 
 -- UI-Corner
 local uiCorner = Instance.new("UICorner")
@@ -42,7 +70,7 @@ local function createButton(name, text, position, action)
     button.MouseButton1Click:Connect(action)
 end
 
--- frame draggable
+-- Frame draggable
 local dragToggle = nil
 local dragStart = nil
 local startPos = nil
@@ -77,28 +105,28 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
--- buttons
+-- Buttons
 createButton("Button1", "Spawn", UDim2.new(0.1, 0, 0.1, 0), function()
-game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(111.20410919189453, 8.207777976989746, -413.4593811035156))
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(111.20410919189453, 8.207777976989746, -413.4593811035156))
 end)
 createButton("Button2", "Map Vote", UDim2.new(0.1, 0, 0.2, 0), function()
-game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(147.83396911621094, 5.999999523162842, -349.55047607421875))
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(147.83396911621094, 5.999999523162842, -349.55047607421875))
 end)
 createButton("Button3", "Cave", UDim2.new(0.1, 0, 0.3, 0), function()
-game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(279.4504089355469, -11.000000953674316, -366.7091369628906))
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(279.4504089355469, -11.000000953674316, -366.7091369628906))
 end)
-createButton("Button3", "Trading Servers [Req. Level 6]", UDim2.new(0.1, 0, 0.4, 0), function()
-game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(64.84588623046875, 3.999999761581421, -306.64068603515625))
+createButton("Button4", "Trading Servers [Req. Level 6]", UDim2.new(0.1, 0, 0.4, 0), function()
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(64.84588623046875, 3.999999761581421, -306.64068603515625))
 end)
 createButton("Button5", "Random Computer", UDim2.new(0.1, 0, 0.5, 0), function()
-loadstring(game:HttpGet("https://pastebin.com/raw/tdUC169t",true))()
+    loadstring(game:HttpGet("https://pastebin.com/raw/tdUC169t",true))()
 end)
 createButton("Button6", "Random Exit", UDim2.new(0.1, 0, 0.6, 0), function()
-loadstring(game:HttpGet("https://pastebin.com/raw/AsJaDdwq",true))()
+    loadstring(game:HttpGet("https://pastebin.com/raw/AsJaDdwq",true))()
 end)
 createButton("Button7", "FE Audio Control", UDim2.new(0.1, 0, 0.7, 0), function()
-loadstring(game:HttpGet("https://pastebin.com/raw/w3uzjgEq",true))()
+    loadstring(game:HttpGet("https://pastebin.com/raw/w3uzjgEq",true))()
 end)
 createButton("Button8", "Infinite Yield", UDim2.new(0.1, 0, 0.8, 0), function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
 end)
