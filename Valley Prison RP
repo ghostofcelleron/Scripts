@@ -1,0 +1,140 @@
+local function createGUI()
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "ValleyPrisonRP"
+    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 250, 0, 250)
+    frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+
+    local title = Instance.new("TextLabel")
+    title.Text = "<b><i>Valley Prison RP</i></b>"
+    title.Size = UDim2.new(0.8, 0, 0.1, 0)
+    title.Position = UDim2.new(0.1, 0, 0, 0)
+    title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    title.TextColor3 = Color3.fromRGB(0, 0, 139)
+    title.Font = Enum.Font.SourceSansBold
+    title.RichText = true
+    title.TextSize = 24
+    title.BorderSizePixel = 0
+    title.Parent = frame
+
+    local uiStroke = Instance.new("UIStroke")
+    uiStroke.Thickness = 2
+    uiStroke.Parent = frame
+    local colors = {Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255)}
+    local currentColorIndex = 1
+    local function updateBorderColor()
+        uiStroke.Color = colors[currentColorIndex]
+        currentColorIndex = (currentColorIndex % #colors) + 1
+    end
+
+    spawn(function()
+        while true do
+            updateBorderColor()
+            wait(1)
+        end
+    end)
+
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0.1, 0)
+    uiCorner.Parent = frame
+
+    local function createButton(name, text, position, action)
+        local button = Instance.new("TextButton")
+        button.Name = name
+        button.Text = text
+        button.Size = UDim2.new(0.8, 0, 0.1, 0)
+        button.Position = position
+        button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.Font = Enum.Font.SourceSansBold
+        button.TextSize = 20
+
+        local buttonUICorner = Instance.new("UICorner")
+        buttonUICorner.CornerRadius = UDim.new(0.1, 0)
+        buttonUICorner.Parent = button
+
+        button.Parent = frame
+        button.MouseButton1Click:Connect(action)
+    end
+
+    createButton("Button1", "Cell Block", UDim2.new(0.1, 0, 0.1, 0), function()
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(42, 10, 57))
+    end)
+
+    createButton("Button2", "Cafeteria", UDim2.new(0.1, 0, 0.2, 0), function()
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(239, -3, 183))
+    end)
+
+    createButton("Button3", "Storage", UDim2.new(0.1, 0, 0.3, 0), function()
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(42, 10, -37))
+    end)
+
+    createButton("Button4", "Booking", UDim2.new(0.1, 0, 0.4, 0), function()
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new())
+    end)
+
+    createButton("Button5", "Escapee Base", UDim2.new(0.1, 0, 0.5, 0), function()
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(63, 10, -71))
+        wait(2)
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(749, -1, -472))
+    end)
+
+    createButton("Button6", "Correctional Card", UDim2.new(0.1, 0, 0.6, 0), function()
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(96, 21, -112))
+    end)
+
+    createButton("Button7", "Director Card", UDim2.new(0.1, 0, 0.7, 0), function()
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(1, 20, 464))
+    end)
+
+    createButton("Button8", "Infinite Yield FE", UDim2.new(0.1, 0, 0.8, 0), function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    end)
+
+    local dragToggle = nil
+    local dragStart = nil
+    local startPos = nil
+    local function updateInput(input)
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragToggle = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragToggle = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            input = input
+        end
+    end)
+
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if dragToggle then
+            updateInput(input)
+        end
+    end)
+end
+
+createGUI()
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    wait(1)
+    if game.Players.LocalPlayer:FindFirstChild("PlayerGui") and not game.Players.LocalPlayer.PlayerGui:FindFirstChild("ValleyPrisonRP") then
+        createGUI()
+    end
+end)
