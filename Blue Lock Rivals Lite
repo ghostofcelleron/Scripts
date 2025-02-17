@@ -1,0 +1,144 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 250, 0, 250)
+frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BorderSizePixel = 0 
+frame.Parent = screenGui
+
+local title = Instance.new("TextLabel")
+title.Text = "<b><i>Blue Lock</i></b>"
+title.Size = UDim2.new(0.8, 0, 0.1, 0)
+title.Position = UDim2.new(0.1, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+title.TextColor3 = Color3.fromRGB(0, 0, 139)
+title.Font = Enum.Font.SourceSansBold
+title.RichText = true
+title.TextSize = 24
+title.BorderSizePixel = 0
+title.Parent = frame
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2
+uiStroke.Parent = frame
+local colors = {Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255)}
+local currentColorIndex = 1
+local function updateBorderColor()
+    uiStroke.Color = colors[currentColorIndex]
+    currentColorIndex = (currentColorIndex % #colors) + 1
+end
+
+spawn(function()
+    while true do
+        updateBorderColor()
+        wait(1)
+    end
+end)
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0.1, 0)
+uiCorner.Parent = frame
+
+local function createButton(name, text, position, action)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Text = text
+    button.Size = UDim2.new(0.8, 0, 0.1, 0)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 20
+    
+
+    local buttonUICorner = Instance.new("UICorner")
+    buttonUICorner.CornerRadius = UDim.new(0.1, 0) 
+    buttonUICorner.Parent = button
+    
+    button.Parent = frame
+    button.MouseButton1Click:Connect(action)
+end
+
+local dragToggle = nil
+local dragStart = nil
+local startPos = nil
+local function updateInput(input)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragToggle = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragToggle = false
+            end
+        end)
+    end
+end)
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        input = input
+    end
+end)
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragToggle then
+        updateInput(input)
+    end
+end)
+
+createButton("Button1", "Give Football", UDim2.new(0.1, 0, 0.1, 0), function()
+-- Teleport the player to workspace.Football
+local player = game.Players.LocalPlayer
+local football = workspace:FindFirstChild("Football")
+
+if football then
+    player.Character.HumanoidRootPart.CFrame = football.CFrame
+else
+    warn("Football not found in workspace.")
+end
+end)
+
+createButton("Button2", "Silent Boosts", UDim2.new(0.1, 0, 0.2, 0), function()
+-- Set walkspeed to 40 and jumppower to 70
+local player = game.Players.LocalPlayer
+
+-- Wait for the player's character to be loaded
+player.CharacterAdded:Connect(function(character)
+    -- Set walkspeed
+    character.Humanoid.WalkSpeed = 40
+
+    -- Set jumppower
+    character.Humanoid.JumpPower = 70
+end)
+
+-- Apply settings to the character if it's already loaded
+if player.Character then
+    player.Character.Humanoid.WalkSpeed = 40
+    player.Character.Humanoid.JumpPower = 70
+end
+end)
+
+createButton("Button3", "Stat Boost (more noticable)", UDim2.new(0.1, 0, 0.3, 0), function()
+-- Set walkspeed to 65 and jumppower to 125
+local player = game.Players.LocalPlayer
+
+-- Wait for the player's character to be loaded
+player.CharacterAdded:Connect(function(character)
+    -- Set walkspeed
+    character.Humanoid.WalkSpeed = 65
+
+    -- Set jumppower
+    character.Humanoid.JumpPower = 125
+end)
+
+-- Apply settings to the character if it's already loaded
+if player.Character then
+    player.Character.Humanoid.WalkSpeed = 65
+    player.Character.Humanoid.JumpPower = 125
+end
+end)
