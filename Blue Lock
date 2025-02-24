@@ -52,7 +52,6 @@ local function createButton(name, text, position, action)
     button.Font = Enum.Font.SourceSansBold
     button.TextSize = 20
     
-
     local buttonUICorner = Instance.new("UICorner")
     buttonUICorner.CornerRadius = UDim.new(0.1, 0) 
     buttonUICorner.Parent = button
@@ -91,54 +90,88 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
-createButton("Button1", "Give Football", UDim2.new(0.1, 0, 0.1, 0), function()
--- Teleport the player to workspace.Football
-local player = game.Players.LocalPlayer
-local football = workspace:FindFirstChild("Football")
+local usernames = {}
 
-if football then
-    player.Character.HumanoidRootPart.CFrame = football.CFrame
-else
-    warn("Football not found in workspace.")
+-- Function to scan usernames every 15 seconds
+local function scanUsernames()
+    while true do
+        usernames = {}
+        for _, player in pairs(game.Players:GetPlayers()) do
+            table.insert(usernames, player.Name)
+        end
+        wait(15)
+    end
 end
+
+spawn(scanUsernames)
+
+local function simulateKeyPress(keyCode)
+    local virtualUser = game:GetService("VirtualUser")
+    virtualUser:CaptureController()
+    virtualUser:ClickKey(Enum.KeyCode[keyCode])
+end
+
+createButton("Button1", "Give Football", UDim2.new(0.1, 0, 0.1, 0), function()
+    -- Teleport the player to workspace.Football
+    local player = game.Players.LocalPlayer
+    local football = workspace:FindFirstChild("Football")
+
+    if football then
+        player.Character.HumanoidRootPart.CFrame = football.CFrame
+    else
+        warn("Football not found in workspace.")
+        -- Scan for parts with usernames
+        for _, username in pairs(usernames) do
+            local part = workspace:FindFirstChild(username)
+            if part then
+                local footballInPart = part:FindFirstChild("Football")
+                if footballInPart then
+                    for i = 1, 10 do
+                        player.Character.HumanoidRootPart.CFrame = footballInPart.CFrame
+                        simulateKeyPress("E")
+                        wait(0.1) -- Optional delay to avoid too rapid teleporting
+                    end
+                    break
+                end
+            end
+        end
+    end
 end)
 
 createButton("Button2", "Silent Boosts", UDim2.new(0.1, 0, 0.2, 0), function()
--- Set walkspeed to 40 and jumppower to 70
-local player = game.Players.LocalPlayer
+    -- Set walkspeed to 40 and jumppower to 70
+    local player = game.Players.LocalPlayer
 
--- Wait for the player's character to be loaded
-player.CharacterAdded:Connect(function(character)
-    -- Set walkspeed
-    character.Humanoid.WalkSpeed = 40
+    spawn(function()
+        while true do
+            local character = player.Character or player.CharacterAdded:Wait()
 
-    -- Set jumppower
-    character.Humanoid.JumpPower = 70
+            -- Set walkspeed
+            character.Humanoid.WalkSpeed = 40
+
+            -- Set jumppower
+            character.Humanoid.JumpPower = 70
+
+            wait(1) -- Adjust the wait time as needed
+        end
+    end)
 end)
 
--- Apply settings to the character if it's already loaded
-if player.Character then
-    player.Character.Humanoid.WalkSpeed = 40
-    player.Character.Humanoid.JumpPower = 70
-end
-end)
+createButton("Button3", "Stat Boost (more noticeable)", UDim2.new(0.1, 0, 0.3, 0), function()
+    -- Set walkspeed to 65 and jumppower to 125
+    local player = game.Players.LocalPlayer
 
-createButton("Button3", "Stat Boost (more noticable)", UDim2.new(0.1, 0, 0.3, 0), function()
--- Set walkspeed to 65 and jumppower to 125
-local player = game.Players.LocalPlayer
+    spawn(function()
+        while true do
+            local character = player.Character or player.CharacterAdded:Wait()
 
--- Wait for the player's character to be loaded
-player.CharacterAdded:Connect(function(character)
-    -- Set walkspeed
-    character.Humanoid.WalkSpeed = 65
+            -- Set walkspeed
+            character.Humanoid.WalkSpeed = 65
 
-    -- Set jumppower
-    character.Humanoid.JumpPower = 125
-end)
+            -- Set jumppower
+            character.Humanoid.JumpPower = 125
 
--- Apply settings to the character if it's already loaded
-if player.Character then
-    player.Character.Humanoid.WalkSpeed = 65
-    player.Character.Humanoid.JumpPower = 125
-end
+            wait(1) -- Adjust the wait time as needed
+        end
+    end)
 end)
