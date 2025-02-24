@@ -1,1 +1,180 @@
-print("In development!")
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 250, 0, 250)
+frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BorderSizePixel = 0 
+frame.Parent = screenGui
+
+local title = Instance.new("TextLabel")
+title.Text = "<b><i>Slap Battles</i></b>"
+title.Size = UDim2.new(0.8, 0, 0.1, 0)
+title.Position = UDim2.new(0.1, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+title.TextColor3 = Color3.fromRGB(0, 0, 139)
+title.Font = Enum.Font.SourceSansBold
+title.RichText = true
+title.TextSize = 24
+title.BorderSizePixel = 0
+title.Parent = frame
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2
+uiStroke.Parent = frame
+local colors = {Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255)}
+local currentColorIndex = 1
+local function updateBorderColor()
+    uiStroke.Color = colors[currentColorIndex]
+    currentColorIndex = (currentColorIndex % #colors) + 1
+end
+
+spawn(function()
+    while true do
+        updateBorderColor()
+        wait(1)
+    end
+end)
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0.1, 0)
+uiCorner.Parent = frame
+
+local function createButton(name, text, position, action)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Text = text
+    button.Size = UDim2.new(0.8, 0, 0.1, 0)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 20
+    
+
+    local buttonUICorner = Instance.new("UICorner")
+    buttonUICorner.CornerRadius = UDim.new(0.1, 0) 
+    buttonUICorner.Parent = button
+    
+    button.Parent = frame
+    button.MouseButton1Click:Connect(action)
+end
+
+local dragToggle = nil
+local dragStart = nil
+local startPos = nil
+local function updateInput(input)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragToggle = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragToggle = false
+            end
+        end)
+    end
+end)
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        input = input
+    end
+end)
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragToggle then
+        updateInput(input)
+    end
+end)
+
+createButton("Button1", "Slap Aura (req. Killstreak)", UDim2.new(0.1, 0, 0.1, 0), function()
+getgenv().slapauraksonly = state
+        while getgenv().slapauraksonly do
+            for i,v in pairs(game.Players:GetChildren()) do
+                if v ~= game.Players.LocalPlayer and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and v.Character then
+                    if v.Character:FindFirstChild("entered") and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("rock") == nil and v.Character.HumanoidRootPart.BrickColor ~= BrickColor.new("New Yeller") and v.Character.Ragdolled.Value == false then
+                        if v.Character.Head:FindFirstChild("UnoReverseCard") == nil or game.Players.LocalPlayer.leaderstats.Glove.Value == "Error" then
+                            Magnitude = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude
+                            if 25 >= Magnitude then
+                                game:GetService("ReplicatedStorage"):WaitForChild("KSHit"):FireServer(v.Character:WaitForChild("HumanoidRootPart"),true)
+                            end
+                        end
+                    end
+                end
+            end
+        task.wait(0.2)
+        end
+    end)
+end)
+
+createButton("Button2", "Anti-Void (toggle is R)", UDim2.new(0.1, 0, 0.2, 0), function()
+-- Function to create a resized and optionally rotated part at a given position
+local function createPart(position, rotation)
+    local part = Instance.new("Part")
+    part.Size = Vector3.new(500, 400, 65) -- Set the size of the part to have a width of 500, height of 400, and thickness of 65 on the z-axis
+    part.Position = position -- Set the position of the part
+    if rotation then
+        part.Rotation = rotation -- Set the rotation of the part if provided
+    end
+    part.Anchored = true -- Make sure the part is anchored
+    part.Transparency = 1 -- Increase the transparency of the part
+    part.CastShadow = false -- Disable shadow casting
+    part.CanCollide = false -- Set collidability to false
+    part.Parent = workspace -- Set the parent of the part to the workspace
+    return part
+end
+
+-- Function to create a baseplate-like part at a given position
+local function createBaseplate(position)
+    local part = Instance.new("Part")
+    part.Size = Vector3.new(500, 1, 500) -- Set the size of the part to 500x500 with height of 1
+    part.Position = position -- Set the position of the part
+    part.Anchored = true -- Make sure the part is anchored
+    part.Transparency = 1 -- Increase the transparency of the part
+    part.CastShadow = false -- Disable shadow casting
+    part.CanCollide = false -- Set collidability to false
+    part.Parent = workspace -- Set the parent of the part to the workspace
+    return part
+end
+
+-- Create resized parts with or without rotation at the specified coordinates
+local parts = {}
+table.insert(parts, createPart(Vector3.new(-115, -6, 1), Vector3.new(0, 90, 0))) -- Rotated part
+table.insert(parts, createPart(Vector3.new(-3, -6, 116), nil)) -- Non-rotated part
+table.insert(parts, createPart(Vector3.new(108, -5, 2), Vector3.new(0, 90, 0))) -- Rotated part
+table.insert(parts, createPart(Vector3.new(-6, -5, -110), nil)) -- Non-rotated part
+
+-- Create a baseplate-like part at the specified coordinate
+table.insert(parts, createBaseplate(Vector3.new(15, -9, -8)))
+
+-- Function to toggle walk-through ability
+local function toggleWalkThrough(parts)
+    for _, part in ipairs(parts) do
+        part.CanCollide = not part.CanCollide
+    end
+end
+
+-- Handle key press to toggle walk-through
+local userInputService = game:GetService("UserInputService")
+
+userInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.R then
+        toggleWalkThrough(parts)
+    end
+end)
+end)
+
+createButton("Button3", "UBH (Badges)", UDim2.new(0.1, 0, 0.2, 0), function()
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Pro666Pro/UltimateBadgeHub/main/main.lua'))()
+end)
+
+createButton("Button4", "b00jkidd Hub", UDim2.new(0.1, 0, 0.2, 0), function()
+loadstring(game:HttpGet("https://gist.githubusercontent.com/b00jkidd/aba363525d2f778372537da683fc5c64/raw/da7cb356bbc99858b4ae072ee2aaf5bcd22976a1/b00jkidd%2520hub"))()
+end)
