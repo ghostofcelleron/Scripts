@@ -110,7 +110,7 @@ getgenv().slapauraksonly = state
         end
     end)
 
-createButton("Button2", "Anti-Void (toggle is R)", UDim2.new(0.1, 0, 0.2, 0), function()
+createButton("Button2", "Anti-Void (Toggle: R)", UDim2.new(0.1, 0, 0.2, 0), function()
 -- Function to create a resized and optionally rotated part at a given position
 local function createPart(position, rotation)
     local part = Instance.new("Part")
@@ -167,13 +167,13 @@ userInputService.InputBegan:Connect(function(input)
 end)
 end)
 
-createButton("Button3", "UBH (Badges)", UDim2.new(0.1, 0, 0.2, 0), function()
+createButton("Button3", "UBH (Badges)", UDim2.new(0.1, 0, 0.3, 0), function()
 --[[
 	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
 ]]
 loadstring(game:HttpGet('https://raw.githubusercontent.com/Pro666Pro/UltimateBadgeHub/main/main.lua'))()
 end)
 
-createButton("Button4", "b00jkidd Hub", UDim2.new(0.1, 0, 0.2, 0), function()
+createButton("Button4", "b00jkidd Hub", UDim2.new(0.1, 0, 0.4, 0), function()
 loadstring(game:HttpGet("https://gist.githubusercontent.com/b00jkidd/aba363525d2f778372537da683fc5c64/raw/da7cb356bbc99858b4ae072ee2aaf5bcd22976a1/b00jkidd%2520hub"))()
 end)
