@@ -109,7 +109,6 @@ getgenv().slapauraksonly = state
         task.wait(0.2)
         end
     end)
-end)
 
 createButton("Button2", "Anti-Void (toggle is R)", UDim2.new(0.1, 0, 0.2, 0), function()
 -- Function to create a resized and optionally rotated part at a given position
