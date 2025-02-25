@@ -107,7 +107,7 @@ createButton("Button5", "Valley Prison RP", UDim2.new(0.1, 0, 0.5, 0), function(
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Valley%20Prison%20RP",true))()
 end)
 createButton("Button6", "Blue Lock Rivals Lite", UDim2.new(0.1, 0, 0.6, 0), function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Blue%20Lock%20Rivals%20Lite",true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Blue%20Lock",true))()
 end)
 createButton("Button7", "Slap Battles", UDim2.new(0.1, 0, 0.7, 0), function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Slap%20Battles",true))()
