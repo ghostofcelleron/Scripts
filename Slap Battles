@@ -92,7 +92,7 @@ local function createGui(player)
     end)
 
     createButton("Button1", "Slap Aura (req. Killstreak)", UDim2.new(0.1, 0, 0.1, 0), function()
-        getgenv().slapauraksonly = state
+          getgenv().slapauraksonly = state
         while getgenv().slapauraksonly do
             for i,v in pairs(game.Players:GetChildren()) do
                 if v ~= game.Players.LocalPlayer and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and v.Character then
@@ -106,7 +106,7 @@ local function createGui(player)
                     end
                 end
             end
-            task.wait(0.2)
+        task.wait(0.2)
         end
     end)
 
