@@ -108,38 +108,5 @@ local function createLoaderUI()
     end)
 end
 
-local function reloadClickedScripts()
-    wait(5.98) -- Wait for 5.98 seconds
-    for loadstringUrl, _ in pairs(clickedButtons) do
-        loadstring(game:HttpGet(loadstringUrl, true))()
-    end
-end
-
 -- Create loader UI for current player
 createLoaderUI()
-
--- Function to recreate scripts when player dies
-local function recreateScriptsOnDeath(character)
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.Died:Connect(function()
-            reloadClickedScripts() -- Reload the clicked scripts
-        end)
-    end
-end
-
--- Recreate scripts when player is added
-game.Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
-        recreateScriptsOnDeath(character)
-    end)
-end)
-
--- Recreate scripts when the player's character is added (for current player)
-if game.Players.LocalPlayer.Character then
-    recreateScriptsOnDeath(game.Players.LocalPlayer.Character)
-else
-    game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
-        recreateScriptsOnDeath(character)
-    end)
-end
