@@ -75,6 +75,7 @@ local function createLoaderUI()
     createButton("Button6", "Blue Lock Rivals Lite", UDim2.new(0.1, 0, 0.6, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Blue%20Lock")
     createButton("Button7", "Slap Battles", UDim2.new(0.1, 0, 0.7, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Slap%20Battles")
     createButton("Button8", "Gang Up On People Simulator", UDim2.new(0.1, 0, 0.8, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/GangUpOnPeopleSimulator")
+    createButton("Button9", "BuildABoatForTreasure", UDim2.new(0.1, 0, 0.9, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/BuildABoatForTreasure")
 
     -- Add draggable functionality to the frame
     local dragToggle = nil
