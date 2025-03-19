@@ -1,0 +1,328 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game:GetService("CoreGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 250, 0, 250)
+frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BorderSizePixel = 0 
+frame.Parent = screenGui
+
+local title = Instance.new("TextLabel")
+title.Text = "<b><i>BABFT GUI</i></b>"
+title.Size = UDim2.new(0.8, 0, 0.1, 0)
+title.Position = UDim2.new(0.1, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+title.TextColor3 = Color3.fromRGB(0, 0, 139)
+title.Font = Enum.Font.SourceSansBold
+title.RichText = true
+title.TextSize = 24
+title.BorderSizePixel = 0
+title.Parent = frame
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2
+uiStroke.Parent = frame
+local colors = {Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255)}
+local currentColorIndex = 1
+local function updateBorderColor()
+    uiStroke.Color = colors[currentColorIndex]
+    currentColorIndex = (currentColorIndex % #colors) + 1
+end
+
+spawn(function()
+    while true do
+        updateBorderColor()
+        wait(1)
+    end
+end)
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0.1, 0)
+uiCorner.Parent = frame
+
+local function createButton(name, text, position, action)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Text = text
+    button.Size = UDim2.new(0.8, 0, 0.1, 0)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 20
+    
+
+    local buttonUICorner = Instance.new("UICorner")
+    buttonUICorner.CornerRadius = UDim.new(0.1, 0) 
+    buttonUICorner.Parent = button
+    
+    button.Parent = frame
+    button.MouseButton1Click:Connect(action)
+end
+
+local dragToggle = nil
+local dragStart = nil
+local startPos = nil
+local function updateInput(input)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragToggle = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragToggle = false
+            end
+        end)
+    end
+end)
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        input = input
+    end
+end)
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragToggle then
+        updateInput(input)
+    end
+end)
+
+createButton("Button1", "Gold Farm (OP)", UDim2.new(0.1, 0, 0.1, 0), function()
+local TweenService = game:GetService("TweenService")
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local coordinates = {
+    Vector3.new(-40, 52, 1365),
+    Vector3.new(-85, 65, 2138),
+    Vector3.new(-84, 59, 2913),
+    Vector3.new(-9, 44, 3674),
+    Vector3.new(-118, 44, 4448),
+    Vector3.new(-113, 44, 5224),
+    Vector3.new(-70, 39, 5987),
+    Vector3.new(-87, 39, 7529),
+    Vector3.new(-96, 39, 8304),
+    Vector3.new(-53, -354, 9493)
+}
+
+local function partExistsAtPosition(position)
+    local partsAtPosition = workspace:FindPartsInRegion3(
+        Region3.new(
+            position - Vector3.new(0.5, 0.5, 0.5),
+            position + Vector3.new(0.5, 0.5, 0.5)
+        )
+    )
+    for _, part in ipairs(partsAtPosition) do
+        if part.Name == "SmallPlate" then
+            return true
+        end
+    end
+    return false
+end
+
+local function createPlate(position, skipCreation)
+    if not skipCreation and not partExistsAtPosition(position) then
+        local plate = Instance.new("Part")
+        plate.Size = Vector3.new(20, 1, 20)
+        plate.Position = position - Vector3.new(0, plate.Size.Y / 2, 0)
+        plate.Anchored = true
+        plate.Transparency = 1
+        plate.Name = "SmallPlate"
+        plate.Parent = workspace
+    end
+end
+
+local function deleteWater()
+    local waterPart = game:GetService("Workspace"):FindFirstChild("BoatStages")
+    if waterPart and waterPart:FindFirstChild("NormalStages") and waterPart.NormalStages:FindFirstChild("TheEnd") and waterPart.NormalStages.TheEnd:FindFirstChild("Water") then
+        waterPart.NormalStages.TheEnd.Water:Destroy()
+    end
+end
+
+local function handleRespawn()
+    character = player.Character or player.CharacterAdded:Wait()
+    humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+end
+
+local function tweenPlayerToPosition(position, speed)
+    if not humanoidRootPart then return end
+    humanoidRootPart.CanCollide = false
+    local goal = { CFrame = CFrame.new(position) }
+    local distance = (humanoidRootPart.Position - position).Magnitude
+    local duration = distance / speed
+
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+    tween:Play()
+    tween.Completed:Wait()
+    humanoidRootPart.CanCollide = true
+end
+
+while true do
+    deleteWater()
+    for i, position in ipairs(coordinates) do
+        createPlate(position, i == #coordinates)
+    end
+    for _, position in ipairs(coordinates) do
+        if not character or not character.Parent then
+            handleRespawn()
+        end
+        tweenPlayerToPosition(position, 500)
+    end
+    wait(20)
+end
+end)
+
+createButton("Button2", "TheRealAsu GUI (OP)", UDim2.new(0.1, 0, 0.2, 0), function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/TheRealAsu/BABFT/refs/heads/main/Jan25_Source.lua",true))()
+end)
+
+createButton("Button3", "Tool GUI", UDim2.new(0.1, 0, 0.3, 0), function()
+-- Original Code by https://scriptblox.com/script/Universal-Script-workspace-tool-giver-ui-12089
+-- Edited by dsgdfs/Sky
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local UIListLayout = Instance.new("UIListLayout")
+local TextButton = Instance.new("TextButton")
+local TextLabel = Instance.new("TextLabel")
+local TextButton_2 = Instance.new("TextButton")
+
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
+
+Frame.Parent = ScreenGui
+Frame.Active = true
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Dark black
+Frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+Frame.Position = UDim2.new(0.0610425249, 0, 0.0939490423, 0)
+Frame.Size = UDim2.new(0, 218, 0, 225)
+
+ScrollingFrame.Parent = Frame
+ScrollingFrame.Active = true
+ScrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Dark black
+ScrollingFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ScrollingFrame.Position = UDim2.new(0.0871559605, 0, 0.155555561, 0)
+ScrollingFrame.Size = UDim2.new(0, 187, 0, 136)
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 35, 0)
+
+UIListLayout.Parent = ScrollingFrame
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+TextButton.Parent = ScrollingFrame
+TextButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70) -- Darker button
+TextButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.Size = UDim2.new(0, 155, 0, 39)
+TextButton.Visible = false
+TextButton.Font = Enum.Font.SourceSans
+TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.TextSize = 20.000
+TextButton.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+TextButton.TextStrokeTransparency = 0.000
+TextButton.TextWrapped = true
+
+TextLabel.Parent = Frame
+TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Dark black
+TextLabel.BorderColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.Position = UDim2.new(-0.00129664713, 0, -0.000140406293, 0)
+TextLabel.Size = UDim2.new(0, 218, 0, 25)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "Tool Equipper"
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextSize = 14.000
+
+TextButton_2.Parent = Frame
+TextButton_2.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Darker button
+TextButton_2.BorderColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_2.Position = UDim2.new(0.0825688094, 0, 0.804444432, 0)
+TextButton_2.Size = UDim2.new(0, 180, 0, 30)
+TextButton_2.Font = Enum.Font.SourceSans
+TextButton_2.Text = "Update List"
+TextButton_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_2.TextSize = 14.000
+
+local function FNDR_fake_script() -- Frame.LocalScript 
+    local script = Instance.new('LocalScript', Frame)
+
+    local button = script.Parent.ScrollingFrame.TextButton
+    button.Parent = nil
+    button.Name = "slaves"
+    local function updatelist()
+        for i, v in script.Parent.ScrollingFrame:GetDescendants() do
+            if v:IsA("TextButton") then
+                v:Destroy()
+            end
+        end
+    
+        local function cloneToChar(toolName)
+            local clonedTool = toolName:Clone()
+            clonedTool.Parent = game:GetService("Players").LocalPlayer.Character
+        end
+        for i, v in pairs(game:GetDescendants()) do
+            if v:IsA("Tool") and v.Parent.Parent ~= game:GetService("Players").LocalPlayer then
+                local clonebutton = button:Clone()
+                clonebutton.Parent = script.Parent.ScrollingFrame
+                clonebutton.Visible = true
+                clonebutton.Text = v.Name
+                clonebutton.MouseButton1Click:Connect(function()
+                    cloneToChar(v)
+                end)
+            end
+        end
+    end
+    script.Parent.TextButton.MouseButton1Click:Connect(updatelist)
+end
+coroutine.wrap(FNDR_fake_script)()
+
+local function SGRWUDK_fake_script() -- Frame.DragScript 
+    local script = Instance.new('LocalScript', Frame)
+
+    local UIS = game:GetService('UserInputService')
+    local frame = script.Parent
+    local dragToggle = nil
+    local dragSpeed = 0
+    local dragStart = nil
+    local startPos = nil
+    
+    local function updateInput(input)
+        local delta = input.Position - dragStart
+        local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        game:GetService('TweenService'):Create(frame, TweenInfo.new(dragSpeed), {
+            Position = position
+        }):Play()
+    end
+    
+    frame.InputBegan:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then 
+            dragToggle = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragToggle = false
+                end
+            end)
+        end
+    end)
+    
+    UIS.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if dragToggle then
+                updateInput(input)
+            end
+        end
+    end)
+end
+coroutine.wrap(SGRWUDK_fake_script)()
+end)
+
+createButton("Button4", "Infinite Yield FE", UDim2.new(0.1, 0, 0.4, 0), function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
