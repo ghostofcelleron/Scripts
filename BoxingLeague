@@ -1,0 +1,231 @@
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local Toggle1 = Instance.new("TextButton")
+local Toggle2 = Instance.new("TextButton")
+local Toggle3 = Instance.new("TextButton")
+local CloseButton = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
+local UIStroke = Instance.new("UIStroke")
+local UIS = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+
+-- Parent GUI
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Main Frame
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.Position = UDim2.new(0.4, 0, 0.3, 0)
+MainFrame.Size = UDim2.new(0, 300, 0, 345)
+
+UICorner.Parent = MainFrame
+UICorner.CornerRadius = UDim.new(0, 12)
+
+UIStroke.Parent = MainFrame
+UIStroke.Color = Color3.fromRGB(100, 100, 255)
+UIStroke.Thickness = 1.5
+
+-- Title Label
+Title.Parent = MainFrame
+Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 0, 0, 5)
+Title.Size = UDim2.new(1, 0, 0, 25)
+Title.Font = Enum.Font.SourceSansBold
+Title.Text = "Boxing League GUI"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
+Title.TextStrokeTransparency = 0.8
+
+-- Toggle 1
+Toggle1.Parent = MainFrame
+Toggle1.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Toggle1.Position = UDim2.new(0.1, 0, 0.15, 0)
+Toggle1.Size = UDim2.new(0.8, 0, 0.2, 0)
+Toggle1.Font = Enum.Font.SourceSans
+Toggle1.Text = "Toggle Speed (Off)"
+Toggle1.TextColor3 = Color3.fromRGB(255, 255, 255)
+Toggle1.TextSize = 16
+
+local ToggleCorner1 = UICorner:Clone()
+ToggleCorner1.Parent = Toggle1
+
+-- Toggle 2
+Toggle2.Parent = MainFrame
+Toggle2.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Toggle2.Position = UDim2.new(0.1, 0, 0.4, 0)
+Toggle2.Size = UDim2.new(0.8, 0, 0.2, 0)
+Toggle2.Font = Enum.Font.SourceSans
+Toggle2.Text = "GOKU MODE LOL (Off)"
+Toggle2.TextColor3 = Color3.fromRGB(255, 255, 255)
+Toggle2.TextSize = 16
+
+local ToggleCorner2 = UICorner:Clone()
+ToggleCorner2.Parent = Toggle2
+
+-- Toggle 2 Functionality: Loop Teleport Behind Closest Player
+local function teleportBehindClosestPlayer()
+    local closestPlayer = nil
+    local shortestDistance = math.huge -- Start with a very large number
+
+    -- Find the closest player
+    for _, otherPlayer in pairs(Players:GetPlayers()) do
+        if otherPlayer ~= player and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local otherHumanoidRootPart = otherPlayer.Character.HumanoidRootPart
+            local distance = (humanoid.RootPart.Position - otherHumanoidRootPart.Position).Magnitude
+            if distance < shortestDistance then
+                closestPlayer = otherPlayer
+                shortestDistance = distance
+            end
+        end
+    end
+
+    -- Teleport behind the closest player
+    if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local closestHRP = closestPlayer.Character.HumanoidRootPart
+        local direction = (closestHRP.CFrame.LookVector * -10) -- 10 studs behind
+        humanoid.RootPart.CFrame = CFrame.new(closestHRP.Position + direction)
+    end
+end
+
+Toggle2.MouseButton1Click:Connect(function()
+    toggled2 = not toggled2
+    Toggle2.Text = toggled2 and "GOKU MODE LOL (On)" or "GOKU MODE LOL (Off)"
+    Toggle2.BackgroundColor3 = toggled2 and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(50, 50, 50)
+
+    if toggled2 then
+        while toggled2 do
+            teleportBehindClosestPlayer()
+            task.wait(0.5) -- Adjust delay if needed
+        end
+    end
+end)
+
+-- Toggle 3
+Toggle3.Parent = MainFrame
+Toggle3.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Toggle3.Position = UDim2.new(0.1, 0, 0.65, 0)
+Toggle3.Size = UDim2.new(0.8, 0, 0.2, 0)
+Toggle3.Font = Enum.Font.SourceSans
+Toggle3.Text = "Shop GUI (Off)"
+Toggle3.TextColor3 = Color3.fromRGB(255, 255, 255)
+Toggle3.TextSize = 16
+
+local ToggleCorner3 = UICorner:Clone()
+ToggleCorner3.Parent = Toggle3
+
+-- Close Button
+CloseButton.Parent = MainFrame
+CloseButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+CloseButton.Position = UDim2.new(1, -30, 0, 5)
+CloseButton.AnchorPoint = Vector2.new(1, 0)
+CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 16
+
+local CloseCorner = UICorner:Clone()
+CloseCorner.Parent = CloseButton
+
+-- Toggle 1 Functionality: Speed Adjustment
+local toggled1 = false
+local spaceHeld = false
+
+local function UpdateSpeed()
+    if humanoid then
+        if spaceHeld then
+            humanoid.WalkSpeed = 9.4
+        else
+            humanoid.WalkSpeed = 14.5
+        end
+    end
+end
+
+Toggle1.MouseButton1Click:Connect(function()
+    toggled1 = not toggled1
+    Toggle1.Text = toggled1 and "Toggle Speed (On)" or "Toggle Speed (Off)"
+    Toggle1.BackgroundColor3 = toggled1 and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(50, 50, 50)
+
+    if toggled1 then
+        while toggled1 do
+            UpdateSpeed()
+            task.wait(0.1)
+        end
+    else
+        if humanoid then
+            humanoid.WalkSpeed = 16 -- Reset to default speed
+        end
+    end
+end)
+
+-- Spacebar Check
+UIS.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Space then
+        spaceHeld = true
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Space then
+        spaceHeld = false
+    end
+end)
+
+-- Toggle 3 Functionality: ShopGui.SB Visibility
+local toggled3 = false
+Toggle3.MouseButton1Click:Connect(function()
+    local shopGui = playerGui:FindFirstChild("ShopGui")
+    local sb = shopGui and shopGui:FindFirstChild("SB")
+    
+    if sb and sb:IsA("GuiObject") then
+        toggled3 = not toggled3
+        sb.Visible = toggled3
+        Toggle3.Text = toggled3 and "Shop GUI (On)" or "Shop GUI (Off)"
+        Toggle3.BackgroundColor3 = toggled3 and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(50, 50, 50)
+        print("Shop GUI visibility set to:", toggled3)
+    else
+        warn("ShopGui.SB not found or is not a valid GuiObject!")
+    end
+end)
+
+-- Close Button Functionality
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Draggable Functionality for Frame
+local dragToggle = false
+local dragStart = nil
+local startPos = nil
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragToggle = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if dragToggle and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragToggle = false
+    end
+end)
