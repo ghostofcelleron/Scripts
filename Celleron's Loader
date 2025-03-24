@@ -1,14 +1,12 @@
-local clickedButtons = {}
-
 local function createLoaderUI()
     local screenGui = Instance.new("ScreenGui")
     screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 250, 0, 250)
+    frame.Size = UDim2.new(0, 250, 0, 340) -- Adjust frame size as needed
     frame.Position = UDim2.new(0.25, 0, 0.25, 0)
     frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    frame.BorderSizePixel = 0 
+    frame.BorderSizePixel = 0
     frame.Parent = screenGui
 
     local title = Instance.new("TextLabel")
@@ -44,40 +42,49 @@ local function createLoaderUI()
     uiCorner.CornerRadius = UDim.new(0.1, 0)
     uiCorner.Parent = frame
 
-    local function createButton(name, text, position, loadstringUrl)
-        local button = Instance.new("TextButton")
-        button.Name = name
-        button.Text = text
-        button.Size = UDim2.new(0.8, 0, 0.1, 0)
-        button.Position = position
-        button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-        button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.Font = Enum.Font.SourceSansBold
-        button.TextSize = 20
-        
-        local buttonUICorner = Instance.new("UICorner")
-        buttonUICorner.CornerRadius = UDim.new(0.1, 0) 
-        buttonUICorner.Parent = button
-        
-        button.Parent = frame
-        button.MouseButton1Click:Connect(function()
-            loadstring(game:HttpGet(loadstringUrl, true))()
-            clickedButtons[loadstringUrl] = true
-            frame:Destroy() -- Destroy the loader frame
-        end)
+    -- Dynamic button logic
+    local function createButtons(buttons)
+        local buttonHeight = 0.8 / #buttons -- Dynamically adjust button height based on number of buttons
+        for index, buttonInfo in ipairs(buttons) do
+            local button = Instance.new("TextButton")
+            button.Name = buttonInfo[1]
+            button.Text = buttonInfo[2]
+            button.Size = UDim2.new(0.8, 0, buttonHeight, 0)
+            button.Position = UDim2.new(0.1, 0, 0.1 + (index - 1) * buttonHeight, 0)
+            button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            button.Font = Enum.Font.SourceSansBold
+            button.TextSize = 20
+
+            local buttonUICorner = Instance.new("UICorner")
+            buttonUICorner.CornerRadius = UDim.new(0.1, 0)
+            buttonUICorner.Parent = button
+
+            button.Parent = frame
+            button.MouseButton1Click:Connect(function()
+                loadstring(game:HttpGet(buttonInfo[3], true))()
+                clickedButtons[buttonInfo[3]] = true
+                frame:Destroy() -- Destroy the loader frame
+            end)
+        end
     end
 
-    createButton("Button1", "Papers Pls", UDim2.new(0.1, 0, 0.1, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Papers%20Pls")
-    createButton("Button2", "Stateview Prison", UDim2.new(0.1, 0, 0.2, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Stateview%20Prison")
-    createButton("Button3", "Flee The Facility", UDim2.new(0.1, 0, 0.3, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Flee%20The%20Facility")
-    createButton("Button4", "SFOTHIV", UDim2.new(0.1, 0, 0.4, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/SwordFightOnTheHeightsIV")
-    createButton("Button5", "Valley Prison RP", UDim2.new(0.1, 0, 0.5, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Valley%20Prison%20RP")
-    createButton("Button6", "Blue Lock Rivals Lite", UDim2.new(0.1, 0, 0.6, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Blue%20Lock")
-    createButton("Button7", "Slap Battles", UDim2.new(0.1, 0, 0.7, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Slap%20Battles")
-    createButton("Button8", "Gang Up On People Simulator", UDim2.new(0.1, 0, 0.8, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/GangUpOnPeopleSimulator")
-    createButton("Button9", "BuildABoatForTreasure", UDim2.new(0.1, 0, 0.9, 0), "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/BuildABoatForTreasure")
+    local buttons = {
+        {"Button1", "Papers Pls", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Papers%20Pls"},
+        {"Button2", "Stateview Prison", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Stateview%20Prison"},
+        {"Button3", "Flee The Facility", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Flee%20The%20Facility"},
+        {"Button4", "SFOTHIV", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/SwordFightOnTheHeightsIV"},
+        {"Button5", "Valley Prison RP", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Valley%20Prison%20RP"},
+        {"Button6", "Blue Lock Rivals Lite", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Blue%20Lock"},
+        {"Button7", "Slap Battles", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/Slap%20Battles"},
+        {"Button8", "Gang Up On People Simulator", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/GangUpOnPeopleSimulator"},
+        {"Button9", "Build A Boat", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/BuildABoatForTreasure"}
+        {"Button9", "Boxing League", "https://raw.githubusercontent.com/ghostofcelleron/Scripts/refs/heads/main/BoxingLeague"}
+    }
 
-    -- Add draggable functionality to the frame
+    createButtons(buttons)
+
+    -- Draggable functionality remains unchanged
     local dragToggle = nil
     local dragStart = nil
     local startPos = nil
