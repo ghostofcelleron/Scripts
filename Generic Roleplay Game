@@ -1,1 +1,592 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
+local textLabel = Instance.new("TextLabel")
+textLabel.Parent = screenGui
+textLabel.Size = UDim2.new(0, 250, 0, 100)
+textLabel.Position = UDim2.new(0, 10, 0, 10)
+textLabel.BackgroundTransparency = 1
+textLabel.TextScaled = true
+textLabel.Font = Enum.Font.SourceSansBold
+textLabel.Text = "Loading..."
+textLabel.TextColor3 = Color3.new(1, 1, 1)
+
+local fps = 0
+local deltaTime = 0
+local clicks = 0
+local cps = 0
+
+local function getPing()
+    return math.random(30, 150)
+end
+
+local function getRainbowColor(time)
+    local r = math.sin(time * 2 + 0) * 0.5 + 0.5
+    local g = math.sin(time * 2 + 2) * 0.5 + 0.5
+    local b = math.sin(time * 2 + 4) * 0.5 + 0.5
+    return Color3.new(r, g, b)
+end
+
+task.spawn(function()
+    while true do
+
+        local ping = getPing()
+        cps = clicks
+        clicks = 0
+
+        textLabel.Text = string.format("FPS: %d\nCPS: %d\nPing: %d ms", fps, cps, ping)
+
+        task.wait(1)
+    end
+end)
+
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        clicks += 1
+    end
+end)
+
+game:GetService("RunService").RenderStepped:Connect(function(delta)
+    fps = math.floor(1 / delta)
+    textLabel.TextColor3 = getRainbowColor(tick())
+end)
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/WetCheezit/Bracket-V2/main/src.lua"))()
+
+local Window, MainGUI = Library:CreateWindow("Generic Roleplay Game (v0.5)")
+
+local UIS = game:GetService("UserInputService")
+
+local RunService = game:GetService("RunService")
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.RightShift then
+        MainGUI.Enabled = not MainGUI.Enabled
+    end
+end)
+
+local Tab1 = Window:CreateTab("Basic")
+local Tab2 = Window:CreateTab("Misc")
+
+local CombatGroup = Tab1:CreateGroupbox("Combat Settings", "Left")
+
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local UIS = game:GetService("UserInputService")
+
+local stopFollow = false
+
+local function followPlayer(playerName)
+    local Player = game.Players.LocalPlayer
+    local Target = Players:FindFirstChild(playerName)
+
+    if Target and Target.Character and Target.Character:FindFirstChild("HumanoidRootPart") then
+        stopFollow = false
+        while Target and Target.Character:FindFirstChild("HumanoidRootPart") and not stopFollow do
+            local TargetHumanoid = Target.Character:FindFirstChild("Humanoid")
+            if TargetHumanoid and TargetHumanoid.Health <= 0 then
+                StarterGui:SetCore("SendNotification", {
+                    Title = "Kill Player",
+                    Text = "Target has died.",
+                    Duration = 3,
+                })
+                break
+            end
+
+            local TargetPosition = Target.Character.HumanoidRootPart.Position
+            local HumanoidRootPart = Player.Character:FindFirstChild("HumanoidRootPart")
+            if HumanoidRootPart then
+                HumanoidRootPart.CFrame = CFrame.new(TargetPosition)
+            end
+            task.wait(0.1)
+        end
+    else
+        StarterGui:SetCore("SendNotification", {
+            Title = "Kill Player",
+            Text = "Player unavailable.",
+            Duration = 3,
+        })
+    end
+end
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.X and not gameProcessed then
+        stopFollow = true
+        StarterGui:SetCore("SendNotification", {
+            Title = "Kill Player",
+            Text = "Target cancelled.",
+            Duration = 3,
+        })
+    end
+end)
+
+local playerDropdownOptions = {}
+for _, player in ipairs(Players:GetPlayers()) do
+    table.insert(playerDropdownOptions, player.Name)
+end
+
+CombatGroup:CreateDropdown("Kill Player", playerDropdownOptions, function(selectedPlayer)
+    followPlayer(selectedPlayer)
+end)
+
+Players.PlayerAdded:Connect(function(player)
+    table.insert(playerDropdownOptions, player.Name)
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    for i, name in ipairs(playerDropdownOptions) do
+	        if name == player.Name then
+			            table.remove(playerDropdownOptions, i)
+						            break
+									        end
+											    end
+												end)
+
+CombatGroup:CreateButton("Kill Aura", function()
+    print("Hi.")
+end)
+
+CombatGroup:CreateButton("Camlock (Toggle: X)", function()
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local toggleActive = false
+local lockedPlayerTorso = nil
+local predictionMultiplier = 0.2
+
+local function getClosestPlayer()
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+    local localCharacter = LocalPlayer.Character
+    local localHumanoidRootPart = localCharacter and localCharacter:FindFirstChild("HumanoidRootPart")
+
+    if localHumanoidRootPart then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                local character = player.Character
+                local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    local distance = (localHumanoidRootPart.Position - humanoidRootPart.Position).Magnitude
+                    if distance < shortestDistance then
+                        shortestDistance = distance
+                        closestPlayer = humanoidRootPart
+                    end
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+local function predictPosition(part)
+    local velocity = part.Velocity
+    local predictedPosition = part.Position + velocity * predictionMultiplier
+    return predictedPosition
+end
+
+local UIS = game:GetService("UserInputService")
+UIS.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.X then
+        toggleActive = not toggleActive
+
+        if toggleActive then
+            lockedPlayerTorso = getClosestPlayer()
+        else
+            lockedPlayerTorso = nil
+        end
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if toggleActive and lockedPlayerTorso then
+        local predictedPosition = predictPosition(lockedPlayerTorso)
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if toggleActive and lockedPlayerTorso then
+        local predictedPosition = predictPosition(lockedPlayerTorso)
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
+    end
+end)
+
+end)
+
+local InfiniteJumpEnabled = false
+
+CombatGroup:CreateButton("Infinite Jump", function()
+    InfiniteJumpEnabled = not InfiniteJumpEnabled
+
+    StarterGui:SetCore("SendNotification", {
+        Title = "Infinite Jump",
+        Text = InfiniteJumpEnabled and "Infinite Jump Enabled" or "Infinite Jump Disabled",
+        Duration = 3,
+    })
+end)
+
+UIS.JumpRequest:Connect(function()
+    if InfiniteJumpEnabled then
+        local Player = game.Players.LocalPlayer
+        local Character = Player.Character or Player.CharacterAdded:Wait()
+        local Humanoid = Character:FindFirstChild("Humanoid")
+        if Humanoid then
+            Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+local ESPEnabled = false
+
+CombatGroup:CreateButton("ESP", function()
+    ESPEnabled = not ESPEnabled
+
+    if ESPEnabled then
+        for _, TargetPlayer in ipairs(game.Players:GetPlayers()) do
+            if TargetPlayer ~= game.Players.LocalPlayer and TargetPlayer.Character then
+                local TargetTorso = TargetPlayer.Character:FindFirstChild("Torso") or TargetPlayer.Character:FindFirstChild("UpperTorso")
+
+                if TargetTorso then
+                    local Highlight = Instance.new("Highlight")
+                    Highlight.Name = "ESPHighlight"
+                    Highlight.Parent = TargetPlayer.Character
+                    Highlight.Adornee = TargetTorso
+                    Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+
+                    local TeamColor = TargetPlayer.Team and TargetPlayer.Team.TeamColor.Color or Color3.new(1, 1, 1)
+                    Highlight.FillColor = TeamColor
+                    Highlight.OutlineColor = TeamColor
+                end
+            end
+        end
+
+
+        StarterGui:SetCore("SendNotification", {
+            Title = "ESP Enabled",
+            Text = "ESP Enabled. Click again to disable.",
+            Duration = 3,
+        })
+    else
+
+        for _, TargetPlayer in ipairs(game.Players:GetPlayers()) do
+            if TargetPlayer.Character then
+                for _, child in ipairs(TargetPlayer.Character:GetChildren()) do
+                    if child:IsA("Highlight") and child.Name == "ESPHighlight" then
+                        child:Destroy()
+                    end
+                end
+            end
+        end
+
+
+        StarterGui:SetCore("SendNotification", {
+            Title = "ESP Disabled",
+            Text = "ESP Disabled.",
+            Duration = 3,
+        })
+    end
+end)
+
+
+CombatGroup:CreateSlider("WalkSpeed", 16, 28, 20, function(value)
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Character:FindFirstChild("Humanoid")
+
+if Humanoid then
+    Humanoid.WalkSpeed = value
+
+    task.spawn(function()
+        while true do
+            if Humanoid.WalkSpeed ~= value then
+                Humanoid.WalkSpeed = value
+            end
+            task.wait(0.5)
+        end
+    end)
+end
+end)
+
+CombatGroup:CreateSlider("JumpPower", 50, 80, 65, function(value)
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Character:FindFirstChild("Humanoid")
+
+if Humanoid then
+    Humanoid.JumpPower = value
+
+    task.spawn(function()
+        while true do
+            if Humanoid.JumpPower ~= value then
+                Humanoid.JumpPower = value
+            end
+            task.wait(0.5)
+        end
+    end)
+end
+end)
+
+local CombatGroup = Tab1:CreateGroupbox("Protections", "Right")
+local autoHealEnabled = false
+
+CombatGroup:CreateButton("Toggle Auto-Heal", function()
+    autoHealEnabled = not autoHealEnabled
+    if autoHealEnabled then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Auto-Heal";
+            Text = "Enabled.";
+            Duration = 3;
+        })
+    else
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Auto-Heal";
+            Text = "Disabled.";
+            Duration = 3;
+        })
+    end
+end)
+
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local Player = game.Players.LocalPlayer
+local Backpack = Player:WaitForChild("Backpack")
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+
+local itemsToEquip = { "Popcorn", "Good Food", "Best Food", "Ramen", "Basic Food", "Peanut" }
+
+local function equipAndClick()
+    for _, itemName in pairs(itemsToEquip) do
+        local item = Backpack:FindFirstChild(itemName)
+        if item then
+            Player.Character.Humanoid:EquipTool(item)
+            task.wait(0.5)
+            for click = 1, 3 do
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                task.wait(0.1)
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                task.wait(4.5)
+            end
+        end
+    end
+end
+
+task.spawn(function()
+    while true do
+        if autoHealEnabled and Humanoid.Health < 75 then
+            equipAndClick()
+        end
+        task.wait(1)
+    end
+end)
+
+local UtilityGroup = Tab2:CreateGroupbox("Utilities", "Right")
+
+UtilityGroup:CreateButton("GRG Teleport Tool", function()
+    local Player = game.Players.LocalPlayer
+    local Backpack = Player:WaitForChild("Backpack")
+
+    local teleportTool = Instance.new("Tool")
+    teleportTool.Name = "GRG Teleport"
+    teleportTool.RequiresHandle = false
+    teleportTool.Parent = Backpack
+
+    local function WorkingTp()
+        for i, partfr in pairs(Player.Character:GetChildren()) do 
+            if partfr:IsA("BasePart") then 
+                if Player.Team == "Doctor" then
+                    firetouchinterest(partfr, workspace._VisualMap.GuardBase.GuardCollision.GUARDONLY, 0) 
+                    task.wait() 
+                    firetouchinterest(partfr, workspace._VisualMap.GuardBase.GuardCollision.GUARDONLY, 1) 
+                else
+                    firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 0) 
+                    task.wait() 
+                    firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 1) 
+                end 
+            end 
+        end 
+    end
+
+    teleportTool.Activated:Connect(function()
+        local mouse = Player:GetMouse()
+        local targetPosition = mouse.Hit.p
+        WorkingTp()
+        task.wait(0.5)
+        Player.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition)
+    end)
+end)
+
+
+UtilityGroup:CreateButton("Food GUI", function()
+    local Player = game.Players.LocalPlayer
+    local Character = Player.Character or Player.CharacterAdded:Wait()
+    local UIS = game:GetService("UserInputService")
+    local StarterGui = game:GetService("StarterGui")
+
+    local function sendNotification()
+        StarterGui:SetCore("SendNotification", {
+            Title = "GUI Hidden.",
+            Text = "Click Z To Unhide.",
+            Duration = 5,
+        })
+    end
+
+    local function createNotification()
+        local screenGui = Instance.new("ScreenGui")
+        screenGui.Parent = Player:WaitForChild("PlayerGui")
+
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 300, 0, 260)
+        frame.Position = UDim2.new(1, -320, 1, -280)
+        frame.AnchorPoint = Vector2.new(1, 1)
+        frame.BackgroundTransparency = 0.64
+        frame.BackgroundColor3 = Color3.new(0, 0, 0)
+        frame.BorderSizePixel = 0
+        frame.Parent = screenGui
+        frame.Visible = true
+
+        local titleLabel = Instance.new("TextLabel")
+        titleLabel.Size = UDim2.new(0.8, 0, 0.2, 0)
+        titleLabel.Position = UDim2.new(0.05, 0, 0.05, 0)
+        titleLabel.Text = "Food GUI"
+        titleLabel.TextSize = 24
+        titleLabel.Font = Enum.Font.SourceSansBold
+        titleLabel.TextColor3 = Color3.new(0.75, 0.75, 0.75)
+        titleLabel.BackgroundTransparency = 1
+        titleLabel.TextStrokeTransparency = 0
+        titleLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+        titleLabel.Parent = frame
+
+        local options = {"Ramen", "NormalFood", "Bloxy", "Peanuts"}
+        local positions = {
+            Ramen = Vector3.new(-159, 4, 32),
+            NormalFood = Vector3.new(-6, 23, 352),
+            Bloxy = Vector3.new(-34, 24, 426),
+            Peanuts = Vector3.new(-195, 29, 5),
+        }
+        for i, option in ipairs(options) do
+            local button = Instance.new("TextButton")
+            button.Size = UDim2.new(0.4, 0, 0.2, 0)
+            button.Position = UDim2.new(0.05 + ((i - 1) % 2) * 0.5 - 0.006, 0, 0.3 + math.floor((i - 1) / 2) * 0.25, 0)
+            button.Text = option
+            button.TextSize = 20
+            button.Font = Enum.Font.SourceSans
+            button.TextColor3 = Color3.new(1, 1, 1)
+            button.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+            button.BorderSizePixel = 0
+            button.Parent = frame
+
+            button.MouseButton1Click:Connect(function()
+                Character.HumanoidRootPart.CFrame = CFrame.new(positions[option])
+            end)
+        end
+
+        local minimizeButton = Instance.new("TextButton")
+        minimizeButton.Size = UDim2.new(0.1, 0, 0.2, 0)
+        minimizeButton.Position = UDim2.new(0.75, -10, 0.05, 0)
+        minimizeButton.Text = "-"
+        minimizeButton.TextSize = 20
+        minimizeButton.Font = Enum.Font.SourceSansBold
+        minimizeButton.TextColor3 = Color3.new(0.5, 0.5, 0.5)
+        minimizeButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+        minimizeButton.BorderSizePixel = 0
+        minimizeButton.Parent = frame
+
+        minimizeButton.MouseButton1Click:Connect(function()
+            frame.Visible = false
+            sendNotification()
+        end)
+
+        UIS.InputBegan:Connect(function(input)
+            if input.KeyCode == Enum.KeyCode.Z then
+                frame.Visible = not frame.Visible
+            end
+        end)
+    end
+
+    createNotification()
+end)
+
+local Teleports = Tab2:CreateGroupbox("Teleports (Retry if fails!)", "Left")
+
+Teleports:CreateButton("Leader Tower", function()
+local function WorkingTp()
+for i, partfr in pairs(game.Players.LocalPlayer.Character:GetChildren()) do 
+if partfr:IsA("BasePart") then
+firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 0) task.wait() firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 1) end end end
+WorkingTp()
+task.wait(0.25)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(41, 43, 426)
+end)
+
+Teleports:CreateButton("Arena", function()
+local function WorkingTp()
+for i, partfr in pairs(game.Players.LocalPlayer.Character:GetChildren()) do 
+if partfr:IsA("BasePart") then
+firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 0) task.wait() firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 1) end end end
+WorkingTp()
+task.wait(0.25)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-185, 35, 45)
+end)
+
+Teleports:CreateButton("Cafe", function()
+local function WorkingTp()
+for i, partfr in pairs(game.Players.LocalPlayer.Character:GetChildren()) do 
+if partfr:IsA("BasePart") then
+firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 0) task.wait() firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 1) end end end
+WorkingTp()
+task.wait(0.25)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-47, 25, 423)
+end)
+
+Teleports:CreateButton("Karl's Karts", function()
+local function WorkingTp()
+for i, partfr in pairs(game.Players.LocalPlayer.Character:GetChildren()) do 
+if partfr:IsA("BasePart") then
+firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 0) task.wait() firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 1) end end end
+WorkingTp()
+task.wait(0.25)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(349, 3, -100)
+end)
+
+Teleports:CreateButton("Council Area", function()
+local function WorkingTp()
+for i, partfr in pairs(game.Players.LocalPlayer.Character:GetChildren()) do 
+if partfr:IsA("BasePart") then
+firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 0) task.wait() firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 1) end end end
+WorkingTp()
+task.wait(0.25)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(308, 59, 430)
+end)
+
+Teleports:CreateButton("Spawn", function()
+local function WorkingTp()
+for i, partfr in pairs(game.Players.LocalPlayer.Character:GetChildren()) do 
+if partfr:IsA("BasePart") then
+firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 0) task.wait() firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 1) end end end
+WorkingTp()
+task.wait(0.25)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(41, 23, 415)
+end)
+
+Teleports:CreateButton("Barbarian Town", function()
+local function WorkingTp()
+for i, partfr in pairs(game.Players.LocalPlayer.Character:GetChildren()) do 
+if partfr:IsA("BasePart") then
+firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 0) task.wait() firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 1) end end end
+WorkingTp()
+task.wait(0.25)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1, -1, -1001)
+end)
+
+Teleports:CreateButton("Doctor Store", function()
+local function WorkingTp()
+for i, partfr in pairs(game.Players.LocalPlayer.Character:GetChildren()) do 
+if partfr:IsA("BasePart") then
+firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 0) task.wait() firetouchinterest(partfr, workspace._VisualMap.DoctorBase.DocCollision.DOCONLY, 1) end end end
+WorkingTp()
+task.wait(0.25)
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(23, 23, 284)
+end)
