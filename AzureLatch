@@ -1,0 +1,572 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.CoreGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 250, 0, 250)
+frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.BorderSizePixel = 0 
+frame.Parent = screenGui
+
+local title = Instance.new("TextLabel")
+title.Text = "<b><i>Azure Latch</i></b>"
+title.Size = UDim2.new(0.8, 0, 0.1, 0)
+title.Position = UDim2.new(0.1, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+title.TextColor3 = Color3.fromRGB(0, 0, 139)
+title.Font = Enum.Font.SourceSansBold
+title.RichText = true
+title.TextSize = 24
+title.BorderSizePixel = 0
+title.Parent = frame
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2
+uiStroke.Parent = frame
+local colors = {Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255)}
+local currentColorIndex = 1
+local function updateBorderColor()
+    uiStroke.Color = colors[currentColorIndex]
+    currentColorIndex = (currentColorIndex % #colors) + 1
+end
+
+spawn(function()
+    while true do
+        updateBorderColor()
+        wait(1)
+    end
+end)
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0.1, 0)
+uiCorner.Parent = frame
+
+local function createButton(name, text, position, action)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Text = text
+    button.Size = UDim2.new(0.8, 0, 0.1, 0)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 20
+    
+
+    local buttonUICorner = Instance.new("UICorner")
+    buttonUICorner.CornerRadius = UDim.new(0.1, 0) 
+    buttonUICorner.Parent = button
+    
+    button.Parent = frame
+    button.MouseButton1Click:Connect(action)
+end
+
+local dragToggle = nil
+local dragStart = nil
+local startPos = nil
+local function updateInput(input)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragToggle = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragToggle = false
+            end
+        end)
+    end
+end)
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        input = input
+    end
+end)
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragToggle then
+        updateInput(input)
+    end
+end)
+
+local Players = game:GetService("Players")
+local UserInput = game:GetService("UserInputService")
+local VirtualInput = game:GetService("VirtualInputManager")
+local StarterGui = game:GetService("StarterGui")
+
+local Player = Players.LocalPlayer
+local opTeam = "A"
+if Player.Team == "A" then
+    opTeam = "B"
+end
+
+local billboard = Instance.new("BillboardGui")
+billboard.Size = UDim2.new(0, 230,0, 100)
+billboard.ExtentsOffsetWorldSpace = Vector3.new(800, 0, 0)
+local text = Instance.new("TextLabel")
+text.Text = "Enemy Goal [" .. opTeam .. "]"
+text.FontFace.Bold = true
+text.TextScaled = true
+text.TextColor3 = Color3.fromRGB(255, 255, 255)
+text.BackgroundTransparency = 1
+text.TextStrokeTransparency = 0
+text.Size = UDim2.new(1,0,1,0)
+text.Parent = billboard
+
+while wait(0.1) do
+
+    opTeam = "A"
+    if Player.Team == game.Teams.A then
+        opTeam = "B"
+    end
+
+    if Player.Team == game.Teams.A then
+        text.Text = "Enemy Goal [" .. opTeam .. "]"
+        billboard.Parent = game.Workspace.map.gm1.takai
+    elseif Player.Team == game.Teams.B then
+        text.Text = "Enemy Goal [" .. opTeam .. "]"
+        billboard.Parent = game.Workspace.map.ngm2.takai
+    end
+end
+
+local function createAutoGoalButton(name, text, position)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Text = text
+    button.Size = UDim2.new(0.8, 0, 0.1, 0)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 20
+
+    local buttonUICorner = Instance.new("UICorner")
+    buttonUICorner.CornerRadius = UDim.new(0.1, 0) 
+    buttonUICorner.Parent = button
+
+    button.Parent = frame
+    
+
+    local autoGoalState = false
+    button.MouseButton1Click:Connect(function()
+        autoGoalState = not autoGoalState
+        if autoGoalState then
+            button.Text = "Farm Goals ON"
+            button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+
+            _G.AUTO_GOAL = true
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/lnwskibidi/Roblox/main/AzureLatch.lua"))()
+        else
+            button.Text = "Farm Goals OFF"
+            button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+
+            _G.AUTO_GOAL = false
+        end
+    end)
+end
+
+createAutoGoalButton("Farm Goals", "Farm Goals", UDim2.new(0.1, 0, 0.1, 0))
+
+createButton("Button2", "Get Ultimate (req. Ball)", UDim2.new(0.1, 0, 0.2, 0), function()
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local ContentProvider = game:GetService("ContentProvider")
+
+local function preloadAssets()
+    local assetsToPreload = {}
+    ContentProvider:PreloadAsync(assetsToPreload)
+end
+
+local function emulateClickAtMousePosition()
+    local mouseLocation = UserInputService:GetMouseLocation()
+    local x, y = mouseLocation.X, mouseLocation.Y
+    VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 1)
+    VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 1)
+end
+
+local function isPlayerNearby()
+    local player = Players.LocalPlayer
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local myPosition = player.Character.HumanoidRootPart.Position
+
+        for _, otherPlayer in pairs(Players:GetPlayers()) do
+            if otherPlayer ~= player and otherPlayer.Character then
+                local humanoidRootPart = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    local distance = (myPosition - humanoidRootPart.Position).Magnitude
+                    if distance <= 150 then
+                        return true
+                    end
+                end
+            end
+        end
+    end
+    return false
+end
+
+local function teleportPlayer()
+    local coordinates = {
+        Vector3.new(471, 3, -1935),
+        Vector3.new(4, 3, -1935),
+        Vector3.new(4, 3, -1263),
+        Vector3.new(483, 3, -1264)
+    }
+
+    local player = Players.LocalPlayer
+
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+
+        if not _G.lastCoordinateIndex then
+            _G.lastCoordinateIndex = 1
+        else
+
+            _G.lastCoordinateIndex = _G.lastCoordinateIndex + 1
+            if _G.lastCoordinateIndex > #coordinates then
+                _G.lastCoordinateIndex = 1
+            end
+        end
+
+        local chosenCoordinate = coordinates[_G.lastCoordinateIndex]
+
+        player.Character.HumanoidRootPart.CanCollide = false
+
+        local rotation = (_G.lastCoordinateIndex == 3 or _G.lastCoordinateIndex == 4) and CFrame.Angles(0, math.rad(180), 0) or CFrame.new()
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(chosenCoordinate) * rotation
+
+        player.Character.HumanoidRootPart.CanCollide = true
+
+        local camera = workspace.CurrentCamera
+        camera.CameraType = Enum.CameraType.Custom
+        player.CameraMode = Enum.CameraMode.Classic
+    end
+end
+
+
+local isTeleporting = false
+
+local totalClicks = 500
+local clickInterval = 0.05
+
+local clicksPerformed = 0
+
+
+preloadAssets()
+
+teleportPlayer()
+wait(0.7)
+
+
+spawn(function()
+    while clicksPerformed < totalClicks do
+        if not isTeleporting then
+            emulateClickAtMousePosition()
+            clicksPerformed += 1
+        end
+        wait(clickInterval)
+    end
+end)
+
+spawn(function()
+    while clicksPerformed < totalClicks do
+        if isPlayerNearby() then
+            isTeleporting = true
+            wait(1)
+            teleportPlayer()
+            wait(1)
+            isTeleporting = false
+        end
+        wait(0.1)
+    end
+end)
+end)
+
+createButton("Button2", "Go to Ball", UDim2.new(0.1, 0, 0.3, 0), function()
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local LocalPlayer = Players.LocalPlayer
+
+local function HasBall()
+    local LocalCharacter = LocalPlayer.Character
+    local Football = LocalCharacter and LocalCharacter:FindFirstChild("Ball")
+    return Football ~= nil
+end
+
+local function StealBall()
+    while not HasBall() do
+        local LocalCharacter = LocalPlayer.Character
+        local LocalHumanoidRootPart = LocalCharacter and LocalCharacter:FindFirstChild("HumanoidRootPart")
+        local Football = workspace.Terrain:FindFirstChild("Ball")
+
+        if LocalHumanoidRootPart and Football then
+            LocalHumanoidRootPart.CFrame = CFrame.new(Football.Position.X, 0, Football.Position.Z)
+        end
+
+        for _, OtherPlayer in pairs(Players:GetPlayers()) do
+            if OtherPlayer.Name ~= LocalPlayer.Name then
+                local OtherCharacter = OtherPlayer.Character
+                local OtherFootball = OtherCharacter and OtherCharacter:FindFirstChild("Ball")
+                local OtherHumanoidRootPart = OtherCharacter and OtherCharacter:FindFirstChild("HumanoidRootPart")
+
+                if OtherFootball and OtherHumanoidRootPart and LocalHumanoidRootPart then
+                    LocalHumanoidRootPart.CFrame = OtherFootball.CFrame
+                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Q, false, game)
+                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Q, false, game)
+                end
+            end
+        end
+
+        wait(0.2)
+    end
+
+    print("Ball successfully stolen!")
+end
+
+StealBall()
+end)
+
+
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local StarterGui = game:GetService("StarterGui")
+
+local LocalPlayer = Players.LocalPlayer
+
+local function showNotification(title, text, duration)
+    StarterGui:SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Duration = duration
+    })
+end
+
+local function StealBall()
+    local LocalCharacter = LocalPlayer.Character
+    local LocalHumanoidRootPart = LocalCharacter and LocalCharacter:FindFirstChild("HumanoidRootPart")
+    local Football = workspace.Terrain:FindFirstChild("Ball")
+
+    if LocalHumanoidRootPart and Football then
+        LocalHumanoidRootPart.CFrame = CFrame.new(Football.Position.X, 0, Football.Position.Z)
+    end
+
+    for _, OtherPlayer in pairs(Players:GetPlayers()) do
+        if OtherPlayer.Name ~= LocalPlayer.Name then
+            local OtherCharacter = OtherPlayer.Character
+            local OtherFootball = OtherCharacter and OtherCharacter:FindFirstChild("Ball")
+            local OtherHumanoidRootPart = OtherCharacter and OtherCharacter:FindFirstChild("HumanoidRootPart")
+
+            if OtherFootball and OtherHumanoidRootPart and LocalHumanoidRootPart then
+                LocalHumanoidRootPart.CFrame = OtherFootball.CFrame
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Q, false, game)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Q, false, game)
+            end
+        end
+    end
+end
+
+createButton("AlwaysBallButton", "Always Ball (Use For Ult Farm!)", UDim2.new(0.1, 0, 0.4, 0), function()
+    local alwaysBallActive = not _G.ALWAYS_BALL_ACTIVE
+    _G.ALWAYS_BALL_ACTIVE = alwaysBallActive
+
+    if alwaysBallActive then
+        showNotification("Always Ball", "Activated!", 5)
+        print("Always Ball activated!")
+
+        spawn(function()
+            while _G.ALWAYS_BALL_ACTIVE do
+                StealBall()
+                wait(0.1)
+            end
+        end)
+    else
+        showNotification("Always Ball", "Deactivated!", 5)
+        print("Always Ball deactivated!")
+    end
+end)
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local StarterGui = game:GetService("StarterGui")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+
+local function emulateClick()
+    local mouseLocation = UserInputService:GetMouseLocation()
+    local x, y = mouseLocation.X, mouseLocation.Y
+
+    VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 1)
+    VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 1)
+end
+
+local function teleportAndUse2()
+    local LocalCharacter = LocalPlayer.Character
+    local LocalHumanoidRootPart = LocalCharacter and LocalCharacter:FindFirstChild("HumanoidRootPart")
+    local Football = workspace.Terrain:FindFirstChild("Ball")
+
+    if LocalHumanoidRootPart and Football then
+        LocalHumanoidRootPart.CFrame = CFrame.new(Football.Position.X, Football.Position.Y - 5, Football.Position.Z)
+
+        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Two, false, game)
+        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Two, false, game)
+    end
+end
+
+local function showNotification(title, text, duration)
+    StarterGui:SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Duration = duration
+    })
+end
+
+local autoFunctionalityActive = false
+
+createButton("AutoFunctionalityButton", "Auto Control (Nagi)", UDim2.new(0.1, 0, 0.5, 0), function()
+    autoFunctionalityActive = not autoFunctionalityActive
+
+    if autoFunctionalityActive then
+        showNotification("Auto ", "Activated!", 5)
+        print("Auto Control activated!")
+        spawn(function()
+            while autoFunctionalityActive do
+                local LocalCharacter = LocalPlayer.Character
+                local LocalHumanoidRootPart = LocalCharacter and LocalCharacter:FindFirstChild("HumanoidRootPart")
+                local Football = workspace.Terrain:FindFirstChild("Ball")
+                
+                if LocalHumanoidRootPart and Football then
+                    local distanceAboveHead = Football.Position.Y - LocalHumanoidRootPart.Position.Y
+                    
+                    if distanceAboveHead <= 10 and distanceAboveHead > 0 then
+                        emulateClick()
+                        teleportAndUse2()
+                    end
+                end
+                
+                wait(0.1)
+            end
+        end)
+    else
+        showNotification("Auto Control", "Deactivated!", 5)
+        print("Auto Control deactivated!")
+    end
+end)
+
+createButton("AlwaysBallButton", "Score (manual)", UDim2.new(0.1, 0, 0.6, 0), function()
+
+local coordinateA = Vector3.new(303, 3, -1369)
+local coordinateB = Vector3.new(179, 3, -1830)
+
+local function teleportToPosition(position)
+    local LocalCharacter = LocalPlayer.Character
+    local LocalHumanoidRootPart = LocalCharacter and LocalCharacter:FindFirstChild("HumanoidRootPart")
+
+    if LocalHumanoidRootPart then
+        LocalHumanoidRootPart.CFrame = CFrame.new(position)
+    else
+        warn("Failed to find HumanoidRootPart. Teleportation aborted.")
+    end
+end
+
+local function checkTeamAndTeleport()
+    local teamName = LocalPlayer.Team and LocalPlayer.Team.Name
+
+    if teamName == "A" then
+        print("B")
+        teleportToPosition(coordinateB)
+    elseif teamName == "B" then
+        print("A")
+        teleportToPosition(coordinateA)
+
+        print("Error: Unable to find team.")
+    end
+end
+
+checkTeamAndTeleport()
+end)
+
+local Players = game:GetService("Players")
+local UserInput = game:GetService("UserInputService")
+local VirtualInput = game:GetService("VirtualInputManager")
+local StarterGui = game:GetService("StarterGui")
+
+local Player = Players.LocalPlayer
+local active = false
+
+local function click()
+    local pos = UserInput:GetMouseLocation()
+    VirtualInput:SendMouseButtonEvent(pos.X, pos.Y, 0, true, game, 1)
+    VirtualInput:SendMouseButtonEvent(pos.X, pos.Y, 0, false, game, 1)
+end
+
+local function notify(title, text, duration)
+    StarterGui:SetCore("SendNotification", { Title = title, Text = text, Duration = duration })
+end
+
+local Players = game:GetService("Players")
+local UserInput = game:GetService("UserInputService")
+local VirtualInput = game:GetService("VirtualInputManager")
+local StarterGui = game:GetService("StarterGui")
+
+local Player = Players.LocalPlayer
+local active = true
+
+local function click()
+    local pos = UserInput:GetMouseLocation()
+    VirtualInput:SendMouseButtonEvent(pos.X, pos.Y, 0, true, game, 1)
+    VirtualInput:SendMouseButtonEvent(pos.X, pos.Y, 0, false, game, 1)
+end
+
+local function notify(title, text, duration)
+    StarterGui:SetCore("SendNotification", { Title = title, Text = text, Duration = duration })
+end
+
+local function HasBall()
+    local LocalCharacter = Player.Character
+    local Football = LocalCharacter and LocalCharacter:FindFirstChild("Ball")
+    return Football ~= nil
+end
+
+local function StealBall()
+    while not HasBall() do
+        local LocalCharacter = Player.Character
+        local LocalHumanoidRootPart = LocalCharacter and LocalCharacter:FindFirstChild("HumanoidRootPart")
+        local Football = workspace.Terrain:FindFirstChild("Ball")
+
+        for _, OtherPlayer in pairs(Players:GetPlayers()) do
+            if OtherPlayer.Name ~= Player.Name then
+                local OtherCharacter = OtherPlayer.Character
+                local OtherFootball = OtherCharacter and OtherCharacter:FindFirstChild("Ball")
+                local OtherHumanoidRootPart = OtherCharacter and OtherCharacter:FindFirstChild("HumanoidRootPart")
+
+                if OtherFootball and OtherHumanoidRootPart and LocalHumanoidRootPart then
+                    LocalHumanoidRootPart.CFrame = OtherFootball.CFrame
+                    VirtualInput:SendKeyEvent(true, Enum.KeyCode.Q, false, game)
+                    VirtualInput:SendKeyEvent(false, Enum.KeyCode.Q, false, game)
+                end
+            end
+        end
+        wait(0.2)
+    end
+end
+createButton("BringBall", "Bring Ball", UDim2.new(0.1, 0, 0.7, 0), function()
+    if active then
+        spawn(function()
+            local char = Player.Character
+            local root = char and char:FindFirstChild("HumanoidRootPart")
+            local ball = workspace.Terrain:FindFirstChild("Ball")
+            if root and ball then
+                local ogPos = root.CFrame
+
+                root.CFrame = CFrame.new(ball.Position.X, ball.Position.Y, ball.Position.Z)
+                StealBall()
+                wait(0.3)
+                root.CFrame = ogPos
+            end
+        end)
+    end
+end)
